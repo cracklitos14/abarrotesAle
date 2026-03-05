@@ -1,0 +1,113 @@
+.contenedor-categorias {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.encabezado h2 {
+  margin: 0;
+}
+
+.btn-nueva {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card {
+  background: #f9f9f9;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-guardar {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tabla-container {
+  margin-top: 20px;
+}
+
+.tabla-categorias {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-categorias th, .tabla-categorias td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.tabla-categorias th {
+  background-color: #f1f1f1;
+}
+
+.accion.editar {
+  background-color: #ffc107;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.spinner {
+  border: 6px solid #f3f3f3; /* color de fondo */
+  border-top: 6px solid #3498db; /* color de la animación */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 20px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

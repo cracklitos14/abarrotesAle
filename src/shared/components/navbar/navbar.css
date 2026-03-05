@@ -1,0 +1,100 @@
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.topbar {
+  background: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand .icon {
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.menu {
+  background: #3b82f6;
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+}
+
+.menu a.active {
+  background: white;
+  color: #2563eb;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-right {
+  margin-left: auto;
+}
+
+.btn-logout {
+  background-color: #dc3545; /* rojo tipo "danger" */
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+}
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  z-index: 9999;
+}
+
+.toast.success { background: #2ecc71; }
+.toast.error   { background: #e74c3c; }
+.toast.warning { background: #f39c12; }
+
+
+/* Hover: solo aplica si NO está activo */
+.menu a:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* Activo: se queda estático hasta cambiar de ruta */
+.menu a.active {
+  background: white;
+  color: #2563eb;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}

@@ -1,0 +1,18 @@
+.alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: white;
+  z-index: 999; /* ⚠️ menor que overlays grandes */
+  pointer-events: none; /* 🔥 CLAVE: no bloquea clics */
+}
+
+.success {
+  background: #22c55e;
+}
+
+.error {
+  background: #ef4444;
+}

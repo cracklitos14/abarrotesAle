@@ -1,0 +1,113 @@
+<h2>Venta</h2>
+<p>Carrito de compras</p>
+
+<div class="sale-layout">
+
+  <!-- PRODUCTOS -->
+  <div class="products">
+    <input
+      placeholder="Nombre o código"
+      [(ngModel)]="search"
+    (ngModelChange)="onSearchChange()"
+      />
+    
+    <div class="product-grid">
+      <div
+        class="product-card"
+        *ngFor="let p of filteredProducts"
+        (click)="addToCart(p)"
+      >
+        <h4>{{ p.name }}</h4>
+        <strong>${{ p.price }}  </strong>
+        <small>    stock: {{ p.stock }}  </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRITO -->
+  <div class="cart">
+    <h3>Carrito ({{ cart.length }})</h3>
+
+    <div *ngFor="let item of cart" class="cart-item">
+      <div class="item-info">
+        <span>{{ item.name }}</span>
+        <small>${{ item.price }}</small>
+      </div>
+
+      <div class="qty-controls">
+        <button (click)="decrease(item)">−</button>
+        <span>{{ item.qty }}</span>
+        <button (click)="increase(item)">+</button>
+      </div>
+
+      <strong>${{ item.price * item.qty }}</strong>
+    </div>
+
+    <hr />
+
+    <p>Total: <strong>${{ total }}</strong></p>
+    <div *ngIf="paymentMethod === 'efectivo'" class="cash-box">
+  <label>Efectivo recibido</label>
+  <input
+    type="number"
+    [(ngModel)]="cashReceived"
+    (input)="calculateChange()"
+    placeholder="Ej. 500"
+  />
+
+  <p *ngIf="cashReceived >= total">
+    Cambio: <strong>${{ change }}</strong>
+  </p>
+</div>
+
+    <!-- MÉTODO DE PAGO -->
+    <div class="payment">
+     <button
+  class="payment-btn"
+  [ngClass]="{ active: paymentMethod === 'efectivo' }"
+  (click)="selectPayment('efectivo')"
+>
+  💵 Efectivo
+</button>
+
+<button
+  class="payment-btn"
+  [ngClass]="{ active: paymentMethod === 'tarjeta' }"
+  (click)="selectPayment('tarjeta')"
+>
+  💳 Tarjeta
+</button>
+
+    <button
+      class="btn-success"
+      [disabled]="!cart.length || !paymentMethod"
+      (click)="newSale()"
+    >
+      Finalizar venta
+    </button>
+  </div>
+
+</div>
+
+<!-- 🧾 TICKET -->
+<div id="ticket-print">
+  <h3>ALEJANDRA </h3>
+  <p>Fecha: {{ today | date:'short' }}</p>
+  <hr>
+
+  <div *ngFor="let item of cart">
+    <p>
+      {{ item.name }} x{{ item.qty }}
+      <span style="float:right">
+        ${{ item.price * item.qty }}
+      </span>
+    </p>
+  </div>
+
+  <hr>
+  
+  <p><strong>Total:</strong> ${{ total }}</p>
+  <p>Método: {{ paymentMethod }}</p>
+
+  <p style="text-align:center">¡Gracias por su compra!</p>
+</div>

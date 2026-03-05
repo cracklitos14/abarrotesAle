@@ -1,0 +1,111 @@
+.contenedor-reportes {
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #333;
+}
+
+.encabezado {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.subtitulo {
+  color: #666;
+  margin-top: -10px;
+}
+
+.filtro-fechas {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.btn-filtrar {
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.resumen {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.card.ejecutivo {
+  border-radius: 8px;
+  padding: 15px;
+  width: 45%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: white;
+}
+
+.card.ejecutivo.azul {
+  background: #0078d4;
+}
+
+.card.ejecutivo.naranja {
+  background: #d83b01;
+}
+
+.card.ejecutivo h3 {
+  margin-bottom: 10px;
+}
+
+.valor {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.tabla-productos th, .tabla-productos td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.tabla-productos th {
+  background-color: #0078d4;
+  color: white;
+}
+
+.btn-exportar {
+  display: block;
+  margin: 30px auto;
+  background-color: #107c10;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+.acciones-exportar {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-exportar {
+  background-color: #107c10;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.btn-exportar.pdf {
+  background-color: #d83b01;
+}

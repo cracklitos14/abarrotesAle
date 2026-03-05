@@ -1,0 +1,57 @@
+
+<div class="contenedor-categorias">
+  <!-- ENCABEZADO -->
+  <div class="encabezado">
+    <h2>Gestión de categorías</h2>
+    <p class="subtitulo">Organiza tus productos por categorías</p>
+    <button class="btn-nueva" (click)="openNew()">+ Nueva categoría</button>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="card" *ngIf="showForm">
+    <h3>{{ isEdit ? 'Editar categoría' : 'Nueva categoría' }}</h3>
+
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" [(ngModel)]="formCategory.nombre" placeholder="Ej. Lácteos" />
+    </div>
+
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea [(ngModel)]="formCategory.descripcion" placeholder="Ej. Leche, quesos, yogurt"></textarea>
+    </div>
+
+    <div class="acciones">
+      <button class="btn-guardar" (click)="save()">
+        {{ isEdit ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button class="btn-cancelar" (click)="cancel()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="tabla-container" *ngIf="categories.length > 0">
+    <h3>Registros</h3>
+    <table class="tabla-categorias">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Productos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cat of categories">
+          <td>{{ cat.nombre }}</td>
+          <td>{{ cat.descripcion || '—' }}</td>
+          <td>{{ cat.productos ? cat.productos + ' productos' : '—' }}</td>
+          <td>
+            <button class="accion editar" (click)="edit(cat)">✏️ Editar</button>
+            <!-- 🔹 Eliminamos el botón de borrar -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

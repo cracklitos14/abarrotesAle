@@ -1,0 +1,99 @@
+<div class="box">
+
+  <h2>Cierre de Caja</h2>
+
+  <!-- MENSAJE -->
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="fecha">{{ today | date:'fullDate' }}</p>
+
+  <!-- FORMULARIO DE CIERRE -->
+  <ng-container *ngIf="!loading && !error">
+
+    <div class="totales">
+      <div>
+        <span>Total Ventas</span>
+        <strong>{{ totalVentas | currency:'MXN' }}</strong>
+      </div>
+
+      <div>
+        <span>Efectivo Sistema</span>
+        <strong>{{ totalEfectivo | currency:'MXN' }}</strong>
+      </div>
+
+      <div>
+        <span>Tarjeta</span>
+        <strong>{{ totalTarjeta | currency:'MXN' }}</strong>
+      </div>
+    </div>
+
+    <label>Efectivo contado</label>
+    <input
+      type="number"
+      [(ngModel)]="efectivoContado"
+      (input)="calcularDiferencia()"
+    />
+
+    <p>
+      Diferencia:
+      <strong [style.color]="diferencia === 0 ? 'green' : 'red'">
+        {{ diferencia | currency:'MXN' }}
+      </strong>
+    </p>
+
+    <textarea
+      placeholder="Observaciones del cierre..."
+      [(ngModel)]="observaciones">
+    </textarea>
+
+    <button (click)="cerrarCaja()">Cerrar Caja</button>
+
+  </ng-container>
+
+  <!-- ESTADOS -->
+  <p *ngIf="loading">Cargando resumen de caja...</p>
+  <p *ngIf="error">Error al cargar la información</p>
+
+  <hr>
+
+  <!-- HISTORIAL --><hr>
+
+<h3>Historial de Cierres</h3>
+
+<div class="filtros">
+  <input type="date" [(ngModel)]="inicio">
+  <input type="date" [(ngModel)]="fin">
+  <button (click)="cargarHistorial()">Filtrar</button>
+  <button (click)="exportarPDF()">Exportar Todo</button>
+</div>
+
+<table class="tabla-cierres">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Total</th>
+      <th>Efectivo</th>
+      <th>Contado</th>
+      <th>Diferencia</th>
+      <th>PDF</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let c of historial">
+      <td>{{ c.fecha }}</td>
+      <td>{{ c.total_ventas | currency:'MXN' }}</td>
+      <td>{{ c.total_efectivo | currency:'MXN' }}</td>
+      <td>{{ c.efectivo_contado | currency:'MXN' }}</td>
+
+      <td
+        [class.ok]="c.diferencia === 0"
+        [class.bad]="c.diferencia !== 0">
+        {{ c.diferencia | currency:'MXN' }}
+      </td>
+
+      <td>
+        <button (click)="exportarCierrePDF(c)">📄</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

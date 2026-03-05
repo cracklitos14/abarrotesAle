@@ -1,0 +1,34 @@
+/* You can add global styles to this file, and also import other style files */
+/* ===================== */
+/* 🖨️ IMPRESIÓN GLOBAL */
+/* ===================== */
+
+@media print {
+
+  /* ocultar todo */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* mostrar SOLO el ticket */
+  #ticket-print,
+  #ticket-print * {
+    visibility: visible !important;
+  }
+
+  /* posición y tamaño ticket */
+  #ticket-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+    padding: 5mm;
+    font-size: 12px;
+    font-family: monospace;
+    background: white;
+  }
+}
+
+@page {
+  margin: 0;
+}

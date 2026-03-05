@@ -1,0 +1,25 @@
+<header class="topbar">
+  <div class="brand">
+    <div class="icon">🛒</div>
+    <div>
+      <strong>Punto de venta</strong>
+      <small>  Tienda de abarrotes</small>
+      
+    </div>
+  </div>
+   <div class="navbar-right"> 
+      <button class="btn-logout" (click)="logout()" > Cerrar sesión </button>
+  </div>
+
+  
+</header>
+
+<nav class="menu">
+  <a routerLink="/dashboard" routerLinkActive="active"  >Vista general</a>
+  <a routerLink="/sale" routerLinkActive="active">Venta</a>
+  <a routerLink="/products" routerLinkActive="active">Productos</a>
+  <a routerLink="/categories" routerLinkActive="active">Categorías</a>
+  <a routerLink="/box" routerLinkActive="active">Cerrar caja</a>
+  <a routerLink="/reports" routerLinkActive="active">Reportes</a>
+</nav>
+

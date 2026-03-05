@@ -1,0 +1,51 @@
+<h2>Vista general</h2>
+<p>Resumen del día</p>
+
+<div class="dashboard-grid">
+
+  <div class="card">
+    <h4>Ventas de hoy</h4>
+    <strong>{{ dashboard.ventasHoy | currency:'MXN' }}</strong>
+    <small>Ingresos totales</small>
+  </div>
+
+  <div class="card">
+    <h4>Productos vendidos</h4>
+    <strong>{{ dashboard.productosVendidos }}</strong>
+    <small>Unidades</small>
+  </div>
+
+  <div class="card">
+    <h4>Productos en stock</h4>
+    <strong>{{ dashboard.stock }}</strong>
+    <small>Disponibles</small>
+  </div>
+
+  <div class="card">
+    <h4>Categorías</h4>
+    <strong>{{ dashboard.categorias }}</strong>
+    <small>Registradas</small>
+  </div>
+
+</div>
+
+<div class="dashboard-section">
+  <h3>Actividad reciente</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Producto</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of dashboard.actividad || []">
+        <td>{{ a.hora }}</td>
+        <td>{{ a.nombre }}</td>
+        <td>{{ a.subtotal | currency:'MXN' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

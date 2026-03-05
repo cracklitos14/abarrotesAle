@@ -1,0 +1,138 @@
+<!-- Vista de productos con spinner y diseño mejorado -->
+<ng-container *ngIf="loading; else content">
+  <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <span class="ms-3 fs-5">⏳ Cargando productos...</span>
+  </div>
+</ng-container>
+
+<ng-template #content>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fw-bold">📦 Gestión de productos</h2>
+      <button class="btn btn-primary" (click)="newProduct()">➕ Nuevo producto</button>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-sm mb-4" *ngIf="showForm">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">
+          {{ formProduct.id ? '✏️ Editar producto' : '➕ Nuevo producto' }}
+        </h5>
+      </div>
+      <div class="card-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre *</label>
+            <input type="text" [(ngModel)]="formProduct.name" name="name" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Precio</label>
+            <input type="number" [(ngModel)]="formProduct.price" name="price" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Stock</label>
+            <input type="number" [(ngModel)]="formProduct.stock" name="stock" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Código de barras</label>
+            <input
+              type="text"
+              [(ngModel)]="formProduct.codigo_barras"
+              name="codigo_barras"
+              placeholder="Escanea o escribe el código"
+              class="form-control"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Categoría *</label>
+            <select [(ngModel)]="formProduct.category_id" name="category_id" class="form-select">
+              <option value="">-- Selecciona --</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">
+                {{ cat.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success me-2" (click)="saveProduct()">
+              {{ formProduct.id ? 'Actualizar' : 'Guardar' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="input-group mb-3">
+      <span class="input-group-text">🔍</span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar producto..."
+        [(ngModel)]="searchText"
+        (input)="filterProducts()"
+      />
+    </div>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <div class="table-responsive mb-4">
+      <table class="table table-hover align-middle" *ngIf="products.length > 0">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of filteredProducts">
+            <td>{{ product.name }}</td>
+            <td>${{ product.price }}</td>
+            <td>
+              <span [class.text-danger]="product.stock <= 0">{{ product.stock }}</span>
+            </td>
+            <td>
+              <button class="btn btn-warning btn-sm me-2" (click)="editProduct(product)">✏️</button>
+              <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.id)">🗑</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PRODUCTOS SIN STOCK -->
+    <h4 class="fw-bold">🚫 Productos sin stock</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered" *ngIf="outOfStockProducts.length > 0">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of outOfStockProducts">
+            <td>{{ product.name }}</td>
+            <td class="text-danger">{{ product.stock }}</td>
+            <td>
+              <button class="btn btn-warning btn-sm me-2" (click)="editProduct(product)">✏️</button>
+              <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.id)">🗑</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p *ngIf="outOfStockProducts.length === 0" class="text-success">✅ No hay productos sin stock</p>
+  </div>
+</ng-template>

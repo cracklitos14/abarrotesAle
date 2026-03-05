@@ -1,0 +1,78 @@
+.box {
+  max-width: 420px;
+  margin: auto;
+  padding: 24px;
+  font-family: system-ui;
+}
+
+h2 {
+  margin-bottom: 4px;
+}
+
+.fecha {
+  color: #777;
+  font-size: 14px;
+}
+
+.totales div {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+textarea {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tabla-cierres {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.tabla-cierres th {
+  background: #1976d2;
+  color: #fff;
+  padding: 8px;
+}
+
+.tabla-cierres td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla-cierres tr:hover {
+  background: #f5f5f5;
+}
+
+.ok {
+  color: green;
+  font-weight: bold;
+}
+
+.bad {
+  color: red;
+  font-weight: bold;
+}
+
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}

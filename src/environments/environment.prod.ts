@@ -5,7 +5,7 @@ export const environment = {
   authUrl: '/api/login',
 
   // API base
-  apiUrl: '/api/apiS',
+  apiUrl: '/api/apis',
 
   // Dashboard
   dashboardUrl: 'https://abarrotesale.infinityfreeapp.com/backend-ale/api/dashboard.php',

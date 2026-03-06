@@ -2,10 +2,10 @@ export const environment = {
   production: true,
 
   // Auth (login)
-  authUrl: 'https://abarrotesale.infinityfreeapp.com/backend-ale/index.php?endpoint=login',
+  authUrl: '/api/login',
 
   // API base
-  apiUrl: 'https://abarrotesale.infinityfreeapp.com/backend-ale/api',
+  apiUrl: '/api/apiS',
 
   // Dashboard
   dashboardUrl: 'https://abarrotesale.infinityfreeapp.com/backend-ale/api/dashboard.php',

@@ -124,7 +124,8 @@ editProduct(product: any) {
   // =====================
   // 💾 GUARDAR / ACTUALIZAR
   // =====================
- saveProduct() {
+ // 💾 GUARDAR / ACTUALIZAR
+saveProduct() {
 
   if (!this.formProduct.name || !this.formProduct.category_id) {
     alert('Completa los campos obligatorios');
@@ -149,7 +150,12 @@ editProduct(product: any) {
   // ➕ CREAR (si NO hay ID)
   else {
     this.productService.create(this.formProduct).subscribe({
-      next: () => {
+      next: (res: any) => {
+        // 🔎 Validación: si el backend manda error de código repetido
+        if (!res.success) {
+          alert(res.message); // 🚨 muestra "El código de barras ya existe"
+          return;
+        }
         this.loadProducts();
         this.cancel();
       },
@@ -161,7 +167,6 @@ editProduct(product: any) {
     });
   }
 }
-
 
   // =====================
   // 🗑 ELIMINAR

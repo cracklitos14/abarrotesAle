@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 import { CategoryService } from '../../../core/services/category-service';
 import { Category } from '../../../shared/models/categries.model';
@@ -27,7 +29,9 @@ export class CategoriesComponent implements OnInit {
   loading = false;
   error = false;
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     // ✅ UNA sola carga inicial (estable)
@@ -42,12 +46,14 @@ export class CategoriesComponent implements OnInit {
       next: (data: Category[]) => {
         this.categories = Array.isArray(data) ? data : [];
         this.loading = false;
+         this.cd.detectChanges();
       },
       error: err => {
         console.error('Error cargando categorías', err);
         this.categories = [];
         this.error = true;
         this.loading = false;
+         this.cd.detectChanges();
       }
     });
   }

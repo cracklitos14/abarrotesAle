@@ -18,6 +18,7 @@ export class ReportesComponent implements OnInit {
   fechaFin: string = '';
   rangoInicio: string = '';
   rangoFin: string = '';
+  hoy: string = new Date().toISOString().split("T")[0]; // 🔹 fecha actual para limitar inputs
 
   reportes: Reporte = {
     ingresosTotales: 0,
@@ -31,15 +32,26 @@ export class ReportesComponent implements OnInit {
   constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
-    // No cargamos nada hasta que el usuario elija rango
+    // 🔹 Forzamos carga inicial con rango de hoy
+    this.fechaInicio = this.hoy;
+    this.fechaFin = this.hoy;
+    this.loadReportesPorFechas();
   }
 
   loadReportesPorFechas() {
     if (this.fechaInicio && this.fechaFin) {
+      // 🚨 Validación: fecha fin menor que inicio
       if (this.fechaFin < this.fechaInicio) {
         alert("La fecha de fin no puede ser menor que la fecha de inicio");
         return;
       }
+
+      // 🚨 Validación: fechas futuras
+      if (this.fechaInicio > this.hoy || this.fechaFin > this.hoy) {
+        alert("No puedes seleccionar fechas futuras");
+        return;
+      }
+
       this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin).subscribe({
         next: data => {
           this.reportes = data;
@@ -52,6 +64,9 @@ export class ReportesComponent implements OnInit {
         },
         error: err => console.error('Error cargando reportes', err)
       });
+    } else {
+      // 🚨 Validación: fechas vacías
+      alert("Debes seleccionar ambas fechas");
     }
   }
 
@@ -94,91 +109,86 @@ export class ReportesComponent implements OnInit {
     document.body.removeChild(link);
   }
 
- exportarReportePDF() {
-  const doc = new jsPDF();
-  let currentY = 20;
+  exportarReportePDF() {
+    const doc = new jsPDF();
+    let currentY = 20;
 
-  // 🔹 Encabezado
-  doc.setFontSize(16);
-  doc.text("Reporte de Ventas - Abarrotes Ale", 50, currentY);
-  currentY += 10;
+    doc.setFontSize(16);
+    doc.text("Reporte de Ventas - Abarrotes Ale", 50, currentY);
+    currentY += 10;
 
-  doc.setFontSize(12);
-  const inicio = this.rangoInicio || "N/A";
-  const fin = this.rangoFin || "N/A";
-  doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
-  currentY += 15;
-
-  // 🔹 Ingresos Totales
-  doc.setFontSize(14);
-  doc.text("Ingresos Totales", 14, currentY);
-  currentY += 8;
-
-  doc.setFontSize(12);
-  doc.text(`${this.reportes.ingresosTotales} MXN`, 14, currentY);
-  currentY += 15;
-
-  // 🔹 Productos Agotados
-  doc.setFontSize(14);
-  doc.text("Productos Agotados", 14, currentY);
-  currentY += 5;
-
-  if (this.reportes.productosAgotados.length > 0) {
-    autoTable(doc, {
-      startY: currentY,
-      head: [["Producto", "Stock"]],
-      body: this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
-    });
-    currentY = (doc as any).lastAutoTable.finalY + 15;
-  } else {
     doc.setFontSize(12);
-    doc.text("Ninguno", 14, currentY);
+    const inicio = this.rangoInicio || "N/A";
+    const fin = this.rangoFin || "N/A";
+    doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
     currentY += 15;
-  }
 
-  // 🔹 Productos con Stock Bajo
-  doc.setFontSize(14);
-  doc.text("Productos con Stock Bajo", 14, currentY);
-  currentY += 5;
+    doc.setFontSize(14);
+    doc.text("Ingresos Totales", 14, currentY);
+    currentY += 8;
 
-  if (this.reportes.productosStockBajo.length > 0) {
-    autoTable(doc, {
-      startY: currentY,
-      head: [["Producto", "Stock", "Mínimo"]],
-      body: this.reportes.productosStockBajo.map(p => [
-        p.nombre,
-        p.stock,
-        p.stock_minimo
-      ])
-    });
-    currentY = (doc as any).lastAutoTable.finalY + 15;
-  } else {
     doc.setFontSize(12);
-    doc.text("Ninguno", 14, currentY);
+    doc.text(`${this.reportes.ingresosTotales} MXN`, 14, currentY);
     currentY += 15;
+
+    doc.setFontSize(14);
+    doc.text("Productos Agotados", 14, currentY);
+    currentY += 5;
+
+    if (this.reportes.productosAgotados.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Stock"]],
+        body: this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text("Ninguno", 14, currentY);
+      currentY += 15;
+    }
+
+    doc.setFontSize(14);
+    doc.text("Productos con Stock Bajo", 14, currentY);
+    currentY += 5;
+
+    if (this.reportes.productosStockBajo.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Stock", "Mínimo"]],
+        body: this.reportes.productosStockBajo.map(p => [
+          p.nombre,
+          p.stock,
+          p.stock_minimo
+        ])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text("Ninguno", 14, currentY);
+      currentY += 15;
+    }
+
+    doc.setFontSize(14);
+    doc.text("Productos Vendidos", 14, currentY);
+    currentY += 5;
+
+    if (this.reportes.productosVendidos.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Unidades", "Ingresos (MXN)"]],
+        body: this.reportes.productosVendidos.map(p => [
+          p.nombre,
+          p.unidades,
+          p.ingresos
+        ])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 10;
+    } else {
+      doc.setFontSize(12);
+      doc.text("No hay productos vendidos", 14, currentY);
+    }
+
+    doc.save("Reporte_Abarrotes_Ale.pdf");
   }
-
-  // 🔹 Productos Vendidos
-  doc.setFontSize(14);
-  doc.text("Productos Vendidos", 14, currentY);
-  currentY += 5;
-
-  if (this.reportes.productosVendidos.length > 0) {
-    autoTable(doc, {
-      startY: currentY,
-      head: [["Producto", "Unidades", "Ingresos (MXN)"]],
-      body: this.reportes.productosVendidos.map(p => [
-        p.nombre,
-        p.unidades,
-        p.ingresos
-      ])
-    });
-    currentY = (doc as any).lastAutoTable.finalY + 10;
-  } else {
-    doc.setFontSize(12);
-    doc.text("No hay productos vendidos", 14, currentY);
-  }
-
-  doc.save("Reporte_Abarrotes_Ale.pdf");
-}
 }

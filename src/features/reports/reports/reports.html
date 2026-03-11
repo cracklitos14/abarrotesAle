@@ -1,17 +1,19 @@
-<div class="contenedor-reportes" *ngIf="reportes">
+div class="contenedor-reportes" *ngIf="reportes">
   <div class="encabezado">
-    <h2>📊 Reportes Ejecutivos</h2>
+    <h2>📊 Reportes </h2>
     <p class="subtitulo">Análisis del negocio por rango de fechas</p>
 
     <!-- Filtro por rango de fechas -->
     <div class="filtro-fechas">
       <label>Desde:</label>
-      <input type="date" [(ngModel)]="fechaInicio">
+      <!-- 🔹 min y max para evitar fechas futuras -->
+      <input type="date" [(ngModel)]="fechaInicio" [max]="hoy">
       <label>Hasta:</label>
-      <input type="date" [(ngModel)]="fechaFin">
+      <input type="date" [(ngModel)]="fechaFin" [max]="hoy">
       <button class="btn-filtrar" (click)="loadReportesPorFechas()">Generar Reporte</button>
     </div>
   </div>
+
 
   <div class="resumen">
     <div class="card ejecutivo azul">
@@ -69,6 +71,4 @@
 <div class="acciones-exportar">
   <button class="btn-exportar" (click)="exportarReporteCSV()">⬇️ Exportar CSV</button>
   <button class="btn-exportar pdf" (click)="exportarReportePDF()">⬇️ Exportar PDF</button>
-</div>
-
 </div>

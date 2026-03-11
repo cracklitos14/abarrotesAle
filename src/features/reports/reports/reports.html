@@ -1,4 +1,4 @@
-div class="contenedor-reportes" *ngIf="reportes">
+ <div class="contenedor-reportes" *ngIf="reportes">
   <div class="encabezado">
     <h2>📊 Reportes </h2>
     <p class="subtitulo">Análisis del negocio por rango de fechas</p>
@@ -71,4 +71,6 @@ div class="contenedor-reportes" *ngIf="reportes">
 <div class="acciones-exportar">
   <button class="btn-exportar" (click)="exportarReporteCSV()">⬇️ Exportar CSV</button>
   <button class="btn-exportar pdf" (click)="exportarReportePDF()">⬇️ Exportar PDF</button>
+</div>
+
 </div>

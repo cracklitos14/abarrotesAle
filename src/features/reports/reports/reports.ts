@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, CommonModule } from '@angular/common';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-reportes',
@@ -64,39 +65,40 @@ export class ReportesComponent implements OnInit {
   console.log("Consultando reporte:", this.fechaInicio, this.fechaFin);
 
   this.reportsService
-  .getReportesPorFechas(this.fechaInicio,this.fechaFin)
-  .subscribe({
+    .getReportesPorFechas(this.fechaInicio,this.fechaFin)
+    .pipe(
+      finalize(() => {
+        this.cargando = false;   // 🔥 SIEMPRE libera el botón
+      })
+    )
+    .subscribe({
 
-    next:(data)=>{
+      next:(data)=>{
 
-  console.log("Datos recibidos:", data);
+        console.log("Datos recibidos:", data);
 
-  this.reportes = {
-    ...data,
-    ingresosTotales: Number(data.ingresosTotales),
-    mensajeAlertas: data.mensajeAlertas ?? ""
-  };
+        this.reportes = {
+          ...data,
+          ingresosTotales: Number(data.ingresosTotales),
+          mensajeAlertas: data.mensajeAlertas ?? ""
+        };
 
-  this.rangoInicio = this.fechaInicio;
-  this.rangoFin = this.fechaFin;
+        this.rangoInicio = this.fechaInicio;
+        this.rangoFin = this.fechaFin;
 
-  this.cargando = false;
+      },
 
-},
+      error:(err)=>{
 
-    error:(err)=>{
+        console.error("Error reporte:", err);
+        alert("Error al generar reporte");
 
-      console.error("Error reporte:", err);
+      }
 
-      alert("Error al generar reporte");
-
-      this.cargando = false;
-
-    }
-
-  });
+    });
 
 }
+
   limpiarFiltros(){
 
     this.fechaInicio = this.hoy;

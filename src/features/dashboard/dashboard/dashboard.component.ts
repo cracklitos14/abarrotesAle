@@ -53,7 +53,14 @@ if(!this.dashboard.ventasGrafica) return;
 const labels=this.dashboard.ventasGrafica.map((v:any)=>v.hora);
 const data=this.dashboard.ventasGrafica.map((v:any)=>v.total);
 
-const ctx:any=document.getElementById("graficaVentas");
+const canvas:any=document.getElementById("graficaVentas");
+const ctx=canvas.getContext("2d");
+
+/* degradado moderno */
+
+const gradient=ctx.createLinearGradient(0,0,0,200);
+gradient.addColorStop(0,"rgba(59,130,246,0.4)");
+gradient.addColorStop(1,"rgba(59,130,246,0)");
 
 this.chart=new Chart(ctx,{
 type:'line',
@@ -62,19 +69,51 @@ labels:labels,
 datasets:[{
 label:'Ventas',
 data:data,
-tension:0.4
+
+borderColor:"#3b82f6",
+backgroundColor:gradient,
+fill:true,
+
+tension:0.4,
+
+pointRadius:5,
+pointHoverRadius:7,
+pointBackgroundColor:"#3b82f6",
+pointBorderColor:"#fff",
+pointBorderWidth:2
 }]
 },
+
 options:{
 responsive:true,
 maintainAspectRatio:false,
+
 plugins:{
-legend:{display:false}
+legend:{display:false},
+tooltip:{
+backgroundColor:"#111827",
+titleColor:"#fff",
+bodyColor:"#fff",
+padding:10
+}
 },
+
 scales:{
-y:{beginAtZero:true}
+x:{
+grid:{
+display:false
+}
+},
+y:{
+beginAtZero:true,
+grid:{
+color:"#f1f5f9"
 }
 }
+}
+
+}
+
 });
 
 }

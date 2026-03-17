@@ -6,251 +6,239 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Component({
-selector: 'app-reportes',
-standalone: true,
-templateUrl: './reports.html',
-styleUrls: ['./reports.css'],
-imports: [FormsModule, CommonModule, CurrencyPipe]
+  selector: 'app-reportes',
+  standalone: true,
+  templateUrl: './reports.html',
+  styleUrls: ['./reports.css'],
+  imports: [FormsModule, CommonModule, CurrencyPipe]
 })
 export class ReportesComponent implements OnInit {
 
-fechaInicio: string = '';
-fechaFin: string = '';
+  fechaInicio: string = '';
+  fechaFin: string = '';
 
-rangoInicio: string = '';
-rangoFin: string = '';
+  rangoInicio: string = '';
+  rangoFin: string = '';
 
-hoy: string = new Date().toLocaleDateString('sv-SE');
+  hoy: string = new Date().toLocaleDateString('sv-SE');
 
-cargando: boolean = false;
+  cargando: boolean = false;
 
-reportes: Reporte = {
-ingresosTotales: 0,
-productosAgotados: [],
-productosStockBajo: [],
-ventasPorMetodo: [],
-productosVendidos: [],
-mensajeAlertas: "Seleccione un rango de fechas"
-};
+  reportes: Reporte = {
+    ingresosTotales: 0,
+    productosAgotados: [],
+    productosStockBajo: [],
+    ventasPorMetodo: [],
+    productosVendidos: [],
+    mensajeAlertas: "Seleccione un rango de fechas"
+  };
 
-constructor(private reportsService: ReportsService) {}
+  constructor(private reportsService: ReportsService) {}
 
-ngOnInit(){
+  ngOnInit(){
 
-/* Cargar fechas por defecto */
-this.fechaInicio = this.hoy;
-this.fechaFin = this.hoy;
+    /* solo inicializar fechas */
+    this.fechaInicio = this.hoy;
+    this.fechaFin = this.hoy;
 
-/* cargar reporte inicial */
-this.loadReportesPorFechas();
+  }
 
-}
+  loadReportesPorFechas(){
 
+    /* evitar múltiples clicks */
+    if(this.cargando){
+      return;
+    }
 
-loadReportesPorFechas(){
+    if(!this.fechaInicio || !this.fechaFin){
+      alert("Debes seleccionar ambas fechas");
+      return;
+    }
 
-/* evitar doble click */
-if(this.cargando){
-return;
-}
+    if(this.fechaFin < this.fechaInicio){
+      alert("La fecha final no puede ser menor que la inicial");
+      return;
+    }
 
-if(!this.fechaInicio || !this.fechaFin){
-alert("Debes seleccionar ambas fechas");
-return;
-}
+    this.cargando = true;
 
-if(this.fechaFin < this.fechaInicio){
-alert("La fecha final no puede ser menor");
-return;
-}
+    this.reportsService
+      .getReportesPorFechas(this.fechaInicio,this.fechaFin)
+      .subscribe({
 
-this.cargando = true;
+        next:(data)=>{
 
-this.reportsService
-.getReportesPorFechas(this.fechaInicio,this.fechaFin)
-.subscribe({
+          this.reportes = data;
 
-next:(data)=>{
+          this.rangoInicio = this.fechaInicio;
+          this.rangoFin = this.fechaFin;
 
-this.reportes = {...data};
+        },
 
-this.rangoInicio = this.fechaInicio;
-this.rangoFin = this.fechaFin;
+        error:(err)=>{
 
-this.cargando = false;
+          console.error(err);
+          alert("Error al generar reporte");
 
-},
+        },
 
-error:(err)=>{
+        complete:()=>{
 
-console.error(err);
+          /* siempre desbloquear botón */
+          this.cargando = false;
 
-this.cargando = false;
+        }
 
-alert("Error al generar reporte");
+      });
 
-}
-
-});
-
-}
+  }
 
 
-/* limpiar filtros después de exportar */
+  limpiarFiltros(){
 
-limpiarFiltros(){
+    this.fechaInicio = this.hoy;
+    this.fechaFin = this.hoy;
 
-this.fechaInicio = this.hoy;
-this.fechaFin = this.hoy;
+    this.rangoInicio = '';
+    this.rangoFin = '';
 
-this.rangoInicio = '';
-this.rangoFin = '';
+    this.reportes = {
+      ingresosTotales: 0,
+      productosAgotados: [],
+      productosStockBajo: [],
+      ventasPorMetodo: [],
+      productosVendidos: [],
+      mensajeAlertas: "Seleccione un rango de fechas"
+    };
 
-this.reportes = {
-ingresosTotales: 0,
-productosAgotados: [],
-productosStockBajo: [],
-ventasPorMetodo: [],
-productosVendidos: [],
-mensajeAlertas: "Seleccione un rango de fechas"
-};
-
-}
+  }
 
 
 
+  exportarReporteCSV() {
+    const titulo = "Reporte de Ventas - Abarrotes Ale";
+    const rango = `Periodo: ${this.rangoInicio} a ${this.rangoFin}`;
+
+    const rows = [
+      [titulo],
+      [rango],
+      [],
+      ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
+      [],
+      ["Productos Agotados"],
+      ...(this.reportes.productosAgotados.length > 0
+        ? this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
+        : [["Ninguno"]]),
+      [],
+      ["Productos con Stock Bajo"],
+      ...(this.reportes.productosStockBajo.length > 0
+        ? this.reportes.productosStockBajo.map(p => [p.nombre, p.stock, p.stock_minimo])
+        : [["Ninguno"]]),
+      [],
+      ["Productos Vendidos"],
+      ["Producto", "Unidades", "Ingresos (MXN)"],
+      ...(this.reportes.productosVendidos.length > 0
+        ? this.reportes.productosVendidos.map(p => [p.nombre, p.unidades, p.ingresos])
+        : [["No hay productos vendidos"]])
+    ];
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+      + rows.map(e => e.join(";")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Reporte_Abarrotes_Ale.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.limpiarFiltros();
+  }
 
 
+  exportarReportePDF() {
+    const doc = new jsPDF();
+    let currentY = 20;
 
-exportarReporteCSV() {
-const titulo = "Reporte de Ventas - Abarrotes Ale";
-const rango = `Periodo: ${this.rangoInicio} a ${this.rangoFin}`;
+    doc.setFontSize(16);
+    doc.text("Reporte de Ventas - Abarrotes Ale", 50, currentY);
+    currentY += 10;
 
-const rows = [
-[titulo],
-[rango],
-[],
-["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
-[],
-["Productos Agotados"],
-...(this.reportes.productosAgotados.length > 0
-? this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
-: [["Ninguno"]]),
-[],
-["Productos con Stock Bajo"],
-...(this.reportes.productosStockBajo.length > 0
-? this.reportes.productosStockBajo.map(p => [p.nombre, p.stock, p.stock_minimo])
-: [["Ninguno"]]),
-[],
-["Productos Vendidos"],
-["Producto", "Unidades", "Ingresos (MXN)"],
-...(this.reportes.productosVendidos.length > 0
-? this.reportes.productosVendidos.map(p => [p.nombre, p.unidades, p.ingresos])
-: [["No hay productos vendidos"]])
-];
+    doc.setFontSize(12);
+    const inicio = this.rangoInicio || "N/A";
+    const fin = this.rangoFin || "N/A";
+    doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
+    currentY += 15;
 
-let csvContent = "data:text/csv;charset=utf-8,"
-+ rows.map(e => e.join(";")).join("\n");
+    doc.setFontSize(14);
+    doc.text("Ingresos Totales", 14, currentY);
+    currentY += 8;
 
-const encodedUri = encodeURI(csvContent);
-const link = document.createElement("a");
-link.setAttribute("href", encodedUri);
-link.setAttribute("download", "Reporte_Abarrotes_Ale.csv");
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
+    doc.setFontSize(12);
+    doc.text(`${this.reportes.ingresosTotales} MXN`, 14, currentY);
+    currentY += 15;
 
-/* limpiar después de exportar */
-this.limpiarFiltros();
+    doc.setFontSize(14);
+    doc.text("Productos Agotados", 14, currentY);
+    currentY += 5;
 
-}
+    if (this.reportes.productosAgotados.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Stock"]],
+        body: this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text("Ninguno", 14, currentY);
+      currentY += 15;
+    }
 
+    doc.setFontSize(14);
+    doc.text("Productos con Stock Bajo", 14, currentY);
+    currentY += 5;
 
-exportarReportePDF() {
-const doc = new jsPDF();
-let currentY = 20;
+    if (this.reportes.productosStockBajo.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Stock", "Mínimo"]],
+        body: this.reportes.productosStockBajo.map(p => [
+          p.nombre,
+          p.stock,
+          p.stock_minimo
+        ])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text("Ninguno", 14, currentY);
+      currentY += 15;
+    }
 
-doc.setFontSize(16);
-doc.text("Reporte de Ventas - Abarrotes Ale", 50, currentY);
-currentY += 10;
+    doc.setFontSize(14);
+    doc.text("Productos Vendidos", 14, currentY);
+    currentY += 5;
 
-doc.setFontSize(12);
-const inicio = this.rangoInicio || "N/A";
-const fin = this.rangoFin || "N/A";
-doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
-currentY += 15;
+    if (this.reportes.productosVendidos.length > 0) {
+      autoTable(doc, {
+        startY: currentY,
+        head: [["Producto", "Unidades", "Ingresos (MXN)"]],
+        body: this.reportes.productosVendidos.map(p => [
+          p.nombre,
+          p.unidades,
+          p.ingresos
+        ])
+      });
+    } else {
+      doc.setFontSize(12);
+      doc.text("No hay productos vendidos", 14, currentY);
+    }
 
-doc.setFontSize(14);
-doc.text("Ingresos Totales", 14, currentY);
-currentY += 8;
+    doc.save("Reporte_Abarrotes_Ale.pdf");
 
-doc.setFontSize(12);
-doc.text(`${this.reportes.ingresosTotales} MXN`, 14, currentY);
-currentY += 15;
-
-doc.setFontSize(14);
-doc.text("Productos Agotados", 14, currentY);
-currentY += 5;
-
-if (this.reportes.productosAgotados.length > 0) {
-autoTable(doc, {
-startY: currentY,
-head: [["Producto", "Stock"]],
-body: this.reportes.productosAgotados.map(p => [p.nombre, p.stock])
-});
-currentY = (doc as any).lastAutoTable.finalY + 15;
-} else {
-doc.setFontSize(12);
-doc.text("Ninguno", 14, currentY);
-currentY += 15;
-}
-
-doc.setFontSize(14);
-doc.text("Productos con Stock Bajo", 14, currentY);
-currentY += 5;
-
-if (this.reportes.productosStockBajo.length > 0) {
-autoTable(doc, {
-startY: currentY,
-head: [["Producto", "Stock", "Mínimo"]],
-body: this.reportes.productosStockBajo.map(p => [
-p.nombre,
-p.stock,
-p.stock_minimo
-])
-});
-currentY = (doc as any).lastAutoTable.finalY + 15;
-} else {
-doc.setFontSize(12);
-doc.text("Ninguno", 14, currentY);
-currentY += 15;
-}
-
-doc.setFontSize(14);
-doc.text("Productos Vendidos", 14, currentY);
-currentY += 5;
-
-if (this.reportes.productosVendidos.length > 0) {
-autoTable(doc, {
-startY: currentY,
-head: [["Producto", "Unidades", "Ingresos (MXN)"]],
-body: this.reportes.productosVendidos.map(p => [
-p.nombre,
-p.unidades,
-p.ingresos
-])
-});
-currentY = (doc as any).lastAutoTable.finalY + 10;
-} else {
-doc.setFontSize(12);
-doc.text("No hay productos vendidos", 14, currentY);
-}
-
-doc.save("Reporte_Abarrotes_Ale.pdf");
-
-/* limpiar después de exportar */
-this.limpiarFiltros();
-
-}
+    this.limpiarFiltros();
+  }
 
 }

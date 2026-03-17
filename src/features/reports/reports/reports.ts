@@ -69,18 +69,20 @@ export class ReportesComponent implements OnInit {
 
     next:(data)=>{
 
-      console.log("Datos recibidos:", data);
+  console.log("Datos recibidos:", data);
 
-      /* asignar datos */
-      this.reportes = {...data};
+  this.reportes = {
+    ...data,
+    ingresosTotales: Number(data.ingresosTotales),
+    mensajeAlertas: data.mensajeAlertas ?? ""
+  };
 
-      this.rangoInicio = this.fechaInicio;
-      this.rangoFin = this.fechaFin;
+  this.rangoInicio = this.fechaInicio;
+  this.rangoFin = this.fechaFin;
 
-      /* desbloquear botón */
-      this.cargando = false;
+  this.cargando = false;
 
-    },
+},
 
     error:(err)=>{
 

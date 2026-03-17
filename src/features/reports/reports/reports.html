@@ -37,9 +37,7 @@ class="btn-filtrar"
 <h3>Ingresos Totales</h3>
 
 <p class="valor">
-
 {{ reportes.ingresosTotales | currency:'MXN' }}
-
 </p>
 
 </div>
@@ -53,12 +51,10 @@ class="btn-filtrar"
 {{reportes.mensajeAlertas}}
 </p>
 
-<ul *ngIf="reportes.productosStockBajo.length>0">
+<ul *ngIf="reportes.productosStockBajo && reportes.productosStockBajo.length>0">
 
 <li *ngFor="let prod of reportes.productosStockBajo">
-
 {{prod.nombre}} - Stock {{prod.stock}}
-
 </li>
 
 </ul>
@@ -72,16 +68,14 @@ class="btn-filtrar"
 
 <h3>Productos Vendidos</h3>
 
-<table *ngIf="reportes.productosVendidos.length>0">
+<table *ngIf="reportes.productosVendidos && reportes.productosVendidos.length>0">
 
 <thead>
 
 <tr>
-
 <th>Producto</th>
 <th>Unidades</th>
 <th>Ingresos</th>
-
 </tr>
 
 </thead>
@@ -104,15 +98,21 @@ class="btn-filtrar"
 
 
 <div class="exportar">
+
 <button
 class="btn-exportar"
 (click)="exportarReporteCSV()">
 Exportar CSV
 </button>
 
-<button class="btn-exportar pdf"
+<button
+class="btn-exportar pdf"
 (click)="exportarReportePDF()">
-Exportar PDF</button>
+Exportar PDF
+</button>
+
 </div>
+
 <br><br>
+
 </div>

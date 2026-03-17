@@ -1,24 +1,20 @@
-<div class="contenedor-reportes" *ngIf="reportes">
+<div class="contenedor-reportes">
 
-<div class="encabezado">
+<h2>Reportes</h2>
 
-<h2>📊 Reportes</h2>
+<div class="filtros">
 
-<p class="subtitulo">
-Análisis del negocio por rango de fechas
-</p>
+<label>Desde</label>
 
-<div class="filtro-fechas">
-
-<label>Desde:</label>
-
-<input type="date"
+<input
+type="date"
 [(ngModel)]="fechaInicio"
 [max]="hoy">
 
-<label>Hasta:</label>
+<label>Hasta</label>
 
-<input type="date"
+<input
+type="date"
 [(ngModel)]="fechaFin"
 [max]="hoy">
 
@@ -33,54 +29,36 @@ class="btn-filtrar"
 
 </div>
 
-</div>
-
 
 <div class="resumen">
 
-<div class="card ejecutivo azul">
+<div class="card">
 
 <h3>Ingresos Totales</h3>
 
 <p class="valor">
+
 {{ reportes.ingresosTotales | currency:'MXN' }}
+
 </p>
 
 </div>
 
 
-<div class="card ejecutivo naranja">
+<div class="card">
 
-<h3>Alertas de Inventario</h3>
+<h3>Alertas Inventario</h3>
 
-<p class="alerta" *ngIf="reportes.mensajeAlertas">
-{{ reportes.mensajeAlertas }}
+<p *ngIf="reportes.mensajeAlertas">
+{{reportes.mensajeAlertas}}
 </p>
 
-
-<div *ngIf="reportes.productosAgotados.length>0">
-
-<h4>Productos agotados</h4>
-
-<ul>
-
-<li *ngFor="let prod of reportes.productosAgotados">
-{{ prod.nombre }} (Stock {{ prod.stock }})
-</li>
-
-</ul>
-
-</div>
-
-
-<div *ngIf="reportes.productosStockBajo.length>0">
-
-<h4>Stock bajo</h4>
-
-<ul>
+<ul *ngIf="reportes.productosStockBajo.length>0">
 
 <li *ngFor="let prod of reportes.productosStockBajo">
-{{ prod.nombre }} - Stock {{ prod.stock }}
+
+{{prod.nombre}} - Stock {{prod.stock}}
+
 </li>
 
 </ul>
@@ -89,16 +67,12 @@ class="btn-filtrar"
 
 </div>
 
-</div>
 
-
-<div class="productos-vendidos">
+<div class="tabla">
 
 <h3>Productos Vendidos</h3>
 
-<table
-class="tabla-productos"
-*ngIf="reportes.productosVendidos.length>0">
+<table *ngIf="reportes.productosVendidos.length>0">
 
 <thead>
 
@@ -129,20 +103,21 @@ class="tabla-productos"
 </div>
 
 
-<div class="acciones-exportar">
+<div class="exportar">
 
-<button class="btn-exportar"
+<button
+class="btn-exportar"
 (click)="exportarReporteCSV()">
 
-⬇ Exportar CSV
+Exportar CSV
 
 </button>
 
-
-<button class="btn-exportar pdf"
+<button
+class="btn-exportar pdf"
 (click)="exportarReportePDF()">
 
-⬇ Exportar PDF
+Exportar PDF
 
 </button>
 

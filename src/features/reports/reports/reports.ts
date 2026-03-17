@@ -18,7 +18,7 @@ export class ReportesComponent implements OnInit {
   fechaFin: string = '';
   rangoInicio: string = '';
   rangoFin: string = '';
-  hoy: string = new Date().toISOString().split("T")[0]; // 🔹 fecha actual para limitar inputs
+ hoy: string = new Date().toLocaleDateString('sv-SE');// 🔹 fecha actual para limitar inputs
 
   reportes: Reporte = {
     ingresosTotales: 0,

@@ -6,69 +6,88 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Component({
-  selector: 'app-reportes',
-  standalone: true,
-  templateUrl: './reports.html',
-  styleUrls: ['./reports.css'],
-  imports: [FormsModule, CommonModule, CurrencyPipe]
+selector:'app-reportes',
+standalone:true,
+templateUrl:'./reports.html',
+styleUrls:['./reports.css'],
+imports:[FormsModule,CommonModule,CurrencyPipe]
 })
 export class ReportesComponent implements OnInit {
 
-  fechaInicio: string = '';
-  fechaFin: string = '';
-  rangoInicio: string = '';
-  rangoFin: string = '';
- hoy: string = new Date().toLocaleDateString('sv-SE');// 🔹 fecha actual para limitar inputs
+fechaInicio:string='';
+fechaFin:string='';
 
-  reportes: Reporte = {
-    ingresosTotales: 0,
-    productosAgotados: [],
-    productosStockBajo: [],
-    ventasPorMetodo: [],
-    productosVendidos: [],
-    mensajeAlertas: "Seleccione un rango de fechas para ver resultados"
-  };
+rangoInicio:string='';
+rangoFin:string='';
 
-  constructor(private reportsService: ReportsService) {}
+hoy:string=new Date().toLocaleDateString('sv-SE');
 
-  ngOnInit(): void {
-    // 🔹 Forzamos carga inicial con rango de hoy
-    this.fechaInicio = this.hoy;
-    this.fechaFin = this.hoy;
-    this.loadReportesPorFechas();
-  }
+cargando:boolean=false;
 
-  loadReportesPorFechas() {
-    if (this.fechaInicio && this.fechaFin) {
-      // 🚨 Validación: fecha fin menor que inicio
-      if (this.fechaFin < this.fechaInicio) {
-        alert("La fecha de fin no puede ser menor que la fecha de inicio");
-        return;
-      }
+reportes:Reporte={
+ingresosTotales:0,
+productosAgotados:[],
+productosStockBajo:[],
+ventasPorMetodo:[],
+productosVendidos:[],
+mensajeAlertas:"Seleccione un rango de fechas"
+};
 
-      // 🚨 Validación: fechas futuras
-      if (this.fechaInicio > this.hoy || this.fechaFin > this.hoy) {
-        alert("No puedes seleccionar fechas futuras");
-        return;
-      }
+constructor(private reportsService:ReportsService){}
 
-      this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin).subscribe({
-        next: data => {
-          this.reportes = data;
-          // 🔹 Guardamos el rango para exportar
-          this.rangoInicio = this.fechaInicio;
-          this.rangoFin = this.fechaFin;
-          // 🔹 limpiamos solo los inputs
-          this.fechaInicio = '';
-          this.fechaFin = '';
-        },
-        error: err => console.error('Error cargando reportes', err)
-      });
-    } else {
-      // 🚨 Validación: fechas vacías
-      alert("Debes seleccionar ambas fechas");
-    }
-  }
+ngOnInit(){
+
+this.fechaInicio=this.hoy;
+this.fechaFin=this.hoy;
+
+this.loadReportesPorFechas();
+
+}
+
+loadReportesPorFechas(){
+
+if(!this.fechaInicio || !this.fechaFin){
+alert("Debes seleccionar ambas fechas");
+return;
+}
+
+if(this.fechaFin < this.fechaInicio){
+alert("La fecha de fin no puede ser menor");
+return;
+}
+
+if(this.fechaInicio > this.hoy || this.fechaFin > this.hoy){
+alert("No puedes usar fechas futuras");
+return;
+}
+
+this.cargando=true;
+
+this.reportsService
+.getReportesPorFechas(this.fechaInicio,this.fechaFin)
+.subscribe({
+
+next:(data)=>{
+
+this.reportes={...data};
+
+this.rangoInicio=this.fechaInicio;
+this.rangoFin=this.fechaFin;
+
+this.cargando=false;
+
+},
+
+error:(err)=>{
+console.error(err);
+this.cargando=false;
+}
+
+});
+
+}
+
+
 
   exportarReporteCSV() {
     const titulo = "Reporte de Ventas - Abarrotes Ale";

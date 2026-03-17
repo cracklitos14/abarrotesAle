@@ -1,76 +1,151 @@
- <div class="contenedor-reportes" *ngIf="reportes">
-  <div class="encabezado">
-    <h2>📊 Reportes </h2>
-    <p class="subtitulo">Análisis del negocio por rango de fechas</p>
+<div class="contenedor-reportes" *ngIf="reportes">
 
-    <!-- Filtro por rango de fechas -->
-    <div class="filtro-fechas">
-      <label>Desde:</label>
-      <!-- 🔹 min y max para evitar fechas futuras -->
-      <input type="date" [(ngModel)]="fechaInicio" [max]="hoy">
-      <label>Hasta:</label>
-      <input type="date" [(ngModel)]="fechaFin" [max]="hoy">
-      <button class="btn-filtrar" (click)="loadReportesPorFechas()">Generar Reporte</button>
-    </div>
-  </div>
+<div class="encabezado">
+
+<h2>📊 Reportes</h2>
+
+<p class="subtitulo">
+Análisis del negocio por rango de fechas
+</p>
+
+<div class="filtro-fechas">
+
+<label>Desde:</label>
+
+<input type="date"
+[(ngModel)]="fechaInicio"
+[max]="hoy">
+
+<label>Hasta:</label>
+
+<input type="date"
+[(ngModel)]="fechaFin"
+[max]="hoy">
+
+<button
+class="btn-filtrar"
+(click)="loadReportesPorFechas()"
+[disabled]="cargando">
+
+{{ cargando ? 'Generando...' : 'Generar Reporte' }}
+
+</button>
+
+</div>
+
+</div>
 
 
-  <div class="resumen">
-    <div class="card ejecutivo azul">
-      <h3>Ingresos Totales</h3>
-      <p class="valor">{{ reportes.ingresosTotales | currency:'USD':'symbol' }}</p>
-    </div>
-    <div class="card ejecutivo naranja">
-      <h3>Alertas de Inventario</h3>
-      <p class="alerta" *ngIf="reportes.mensajeAlertas">
-        {{ reportes.mensajeAlertas }}
-      </p>
+<div class="resumen">
 
-      <div *ngIf="reportes.productosAgotados && reportes.productosAgotados.length > 0">
-        <h4>Productos agotados:</h4>
-        <ul>
-          <li *ngFor="let prod of reportes.productosAgotados">
-            {{ prod.nombre }} (Stock: {{ prod.stock }})
-          </li>
-        </ul>
-      </div>
+<div class="card ejecutivo azul">
 
-      <div *ngIf="reportes.productosStockBajo && reportes.productosStockBajo.length > 0">
-        <h4>Stock bajo:</h4>
-        <ul>
-          <li *ngFor="let prod of reportes.productosStockBajo">
-            {{ prod.nombre }} - Stock: {{ prod.stock }} (mínimo: {{ prod.stock_minimo }})
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<h3>Ingresos Totales</h3>
 
-  <div class="productos-vendidos">
-    <h3>Productos Vendidos</h3>
-    <table class="tabla-productos" *ngIf="reportes.productosVendidos.length > 0; else noData">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Unidades</th>
-          <th>Ingresos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let prod of reportes.productosVendidos">
-          <td>{{ prod.nombre }}</td>
-          <td>{{ prod.unidades }}</td>
-          <td>{{ prod.ingresos | currency:'USD':'symbol' }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <ng-template #noData>
-      <p>No hay productos vendidos en este rango.</p>
-    </ng-template>
-  </div>
+<p class="valor">
+{{ reportes.ingresosTotales | currency:'MXN' }}
+</p>
+
+</div>
+
+
+<div class="card ejecutivo naranja">
+
+<h3>Alertas de Inventario</h3>
+
+<p class="alerta" *ngIf="reportes.mensajeAlertas">
+{{ reportes.mensajeAlertas }}
+</p>
+
+
+<div *ngIf="reportes.productosAgotados.length>0">
+
+<h4>Productos agotados</h4>
+
+<ul>
+
+<li *ngFor="let prod of reportes.productosAgotados">
+{{ prod.nombre }} (Stock {{ prod.stock }})
+</li>
+
+</ul>
+
+</div>
+
+
+<div *ngIf="reportes.productosStockBajo.length>0">
+
+<h4>Stock bajo</h4>
+
+<ul>
+
+<li *ngFor="let prod of reportes.productosStockBajo">
+{{ prod.nombre }} - Stock {{ prod.stock }}
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="productos-vendidos">
+
+<h3>Productos Vendidos</h3>
+
+<table
+class="tabla-productos"
+*ngIf="reportes.productosVendidos.length>0">
+
+<thead>
+
+<tr>
+
+<th>Producto</th>
+<th>Unidades</th>
+<th>Ingresos</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr *ngFor="let prod of reportes.productosVendidos">
+
+<td>{{prod.nombre}}</td>
+<td>{{prod.unidades}}</td>
+<td>{{prod.ingresos | currency:'MXN'}}</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
 <div class="acciones-exportar">
-  <button class="btn-exportar" (click)="exportarReporteCSV()">⬇️ Exportar CSV</button>
-  <button class="btn-exportar pdf" (click)="exportarReportePDF()">⬇️ Exportar PDF</button>
+
+<button class="btn-exportar"
+(click)="exportarReporteCSV()">
+
+⬇ Exportar CSV
+
+</button>
+
+
+<button class="btn-exportar pdf"
+(click)="exportarReportePDF()">
+
+⬇ Exportar PDF
+
+</button>
+
 </div>
 
 </div>

@@ -43,57 +43,58 @@ export class ReportesComponent implements OnInit {
 
   }
 
-  loadReportesPorFechas(){
+ loadReportesPorFechas(){
 
-    /* evitar múltiples clicks */
-    if(this.cargando){
-      return;
-    }
-
-    if(!this.fechaInicio || !this.fechaFin){
-      alert("Debes seleccionar ambas fechas");
-      return;
-    }
-
-    if(this.fechaFin < this.fechaInicio){
-      alert("La fecha final no puede ser menor que la inicial");
-      return;
-    }
-
-    this.cargando = true;
-
-    this.reportsService
-      .getReportesPorFechas(this.fechaInicio,this.fechaFin)
-      .subscribe({
-
-        next:(data)=>{
-
-          this.reportes = data;
-
-          this.rangoInicio = this.fechaInicio;
-          this.rangoFin = this.fechaFin;
-
-        },
-
-        error:(err)=>{
-
-          console.error(err);
-          alert("Error al generar reporte");
-
-        },
-
-        complete:()=>{
-
-          /* siempre desbloquear botón */
-          this.cargando = false;
-
-        }
-
-      });
-
+  if(this.cargando){
+    return;
   }
 
+  if(!this.fechaInicio || !this.fechaFin){
+    alert("Debes seleccionar ambas fechas");
+    return;
+  }
 
+  if(this.fechaFin < this.fechaInicio){
+    alert("La fecha final no puede ser menor que la inicial");
+    return;
+  }
+
+  this.cargando = true;
+
+  console.log("Consultando reporte:", this.fechaInicio, this.fechaFin);
+
+  this.reportsService
+  .getReportesPorFechas(this.fechaInicio,this.fechaFin)
+  .subscribe({
+
+    next:(data)=>{
+
+      console.log("Datos recibidos:", data);
+
+      /* asignar datos */
+      this.reportes = {...data};
+
+      this.rangoInicio = this.fechaInicio;
+      this.rangoFin = this.fechaFin;
+
+      /* desbloquear botón */
+      this.cargando = false;
+
+    },
+
+    error:(err)=>{
+
+      console.error("Error reporte:", err);
+
+      alert("Error al generar reporte");
+
+      this.cargando = false;
+
+    }
+
+  });
+
+}
   limpiarFiltros(){
 
     this.fechaInicio = this.hoy;

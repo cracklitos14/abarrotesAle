@@ -4,81 +4,79 @@ import { ApiService } from '../../../core/services/api';
 import Chart from 'chart.js/auto';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, CurrencyPipe],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+selector: 'app-dashboard',
+standalone: true,
+imports: [CommonModule, CurrencyPipe],
+templateUrl: './dashboard.component.html',
+styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
 
-  dashboard: any = {
-    ventasHoy: 0,
-    productosVendidos: 0,
-    stock: 0,
-    categorias: 0,
-    actividad: [],
-    ultimaVenta:null,
-    ventasGrafica:[]
-  };
+dashboard:any={
+ventasHoy:0,
+productosVendidos:0,
+stock:0,
+categorias:0,
+actividad:[],
+ultimaVenta:null,
+ventasGrafica:[]
+};
 
-  chart:any;
+chart:any;
 
-  constructor(
-    private api: ApiService,
-    private cdr: ChangeDetectorRef
-  ) {}
+constructor(
+private api:ApiService,
+private cdr:ChangeDetectorRef
+){}
 
-  ngOnInit(): void {
+ngOnInit(){
 
-    this.api.getDashboard().subscribe({
-      next: (res:any) => {
+this.api.getDashboard().subscribe({
+next:(res:any)=>{
 
-        this.dashboard = res;
+this.dashboard=res;
 
-        this.cdr.detectChanges();
+this.cdr.detectChanges();
 
-        this.crearGrafica();
+this.crearGrafica();
 
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+},
+error:(err)=>console.error(err)
+})
 
-  }
+}
 
-  crearGrafica(){
+crearGrafica(){
 
-    if(!this.dashboard.ventasGrafica) return;
+if(!this.dashboard.ventasGrafica) return;
 
-    const labels = this.dashboard.ventasGrafica.map((v:any)=>v.hora);
-    const data = this.dashboard.ventasGrafica.map((v:any)=>v.total);
+const labels=this.dashboard.ventasGrafica.map((v:any)=>v.hora);
+const data=this.dashboard.ventasGrafica.map((v:any)=>v.total);
 
-    const ctx:any = document.getElementById("graficaVentas");
+const ctx:any=document.getElementById("graficaVentas");
 
-    this.chart = new Chart(ctx,{
-      type:'line',
-      data:{
-        labels:labels,
-        datasets:[
-          {
-            label:'Ventas del día',
-            data:data,
-            tension:0.4
-          }
-        ]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{
-            display:false
-          }
-        }
-      }
-    });
+this.chart=new Chart(ctx,{
+type:'line',
+data:{
+labels:labels,
+datasets:[{
+label:'Ventas',
+data:data,
+tension:0.4
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{beginAtZero:true}
+}
+}
+});
 
-  }
+}
 
 }

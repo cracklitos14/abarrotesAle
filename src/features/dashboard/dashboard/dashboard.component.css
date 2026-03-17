@@ -10,6 +10,7 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,.05);
+  border-bottom:3px solid #f3f4f6;
 }
 
 .card h4 {
@@ -33,6 +34,8 @@
   background: white;
   padding: 20px;
   border-radius: 10px;
+  margin-top:20px;
+  border-top:2px solid #f3f4f6;
 }
 
 table {

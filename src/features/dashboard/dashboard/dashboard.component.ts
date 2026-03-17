@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../../../core/services/api';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,30 +17,68 @@ export class DashboardComponent implements OnInit {
     productosVendidos: 0,
     stock: 0,
     categorias: 0,
-    actividad: []
+    actividad: [],
+    ultimaVenta:null,
+    ventasGrafica:[]
   };
+
+  chart:any;
 
   constructor(
     private api: ApiService,
     private cdr: ChangeDetectorRef
-  ) {
-    console.log('✅ CONSTRUCTOR DASHBOARD');
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log('🔥 NGONINIT DASHBOARD');
 
     this.api.getDashboard().subscribe({
-      next: (res) => {
-        console.log('📦 RESPUESTA DASHBOARD:', res);
+      next: (res:any) => {
+
         this.dashboard = res;
 
-        // 🔥 fuerza render
         this.cdr.detectChanges();
+
+        this.crearGrafica();
+
       },
       error: (err) => {
-        console.error('❌ ERROR DASHBOARD:', err);
+        console.error(err);
       }
     });
+
   }
+
+  crearGrafica(){
+
+    if(!this.dashboard.ventasGrafica) return;
+
+    const labels = this.dashboard.ventasGrafica.map((v:any)=>v.hora);
+    const data = this.dashboard.ventasGrafica.map((v:any)=>v.total);
+
+    const ctx:any = document.getElementById("graficaVentas");
+
+    this.chart = new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[
+          {
+            label:'Ventas del día',
+            data:data,
+            tension:0.4
+          }
+        ]
+      },
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{
+            display:false
+          }
+        }
+      }
+    });
+
+  }
+
 }

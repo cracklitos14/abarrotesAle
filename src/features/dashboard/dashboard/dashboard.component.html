@@ -29,6 +29,28 @@
 
 </div>
 
+
+<div class="dashboard-section">
+
+<h3>Última Venta</h3>
+
+<p *ngIf="dashboard.ultimaVenta">
+Hora: {{dashboard.ultimaVenta.hora}}  
+Total: {{dashboard.ultimaVenta.total | currency:'MXN'}}
+</p>
+
+</div>
+
+
+<div class="dashboard-section">
+
+<h3>Ventas del Día</h3>
+
+<canvas id="graficaVentas"></canvas>
+
+</div>
+
+
 <div class="dashboard-section">
   <h3>Últimos Productos Vendidos</h3>
 
@@ -40,6 +62,7 @@
         <th>Total</th>
       </tr>
     </thead>
+
     <tbody>
       <tr *ngFor="let a of dashboard.actividad || []">
         <td>{{ a.hora }}</td>
@@ -47,5 +70,6 @@
         <td>{{ a.subtotal | currency:'MXN' }}</td>
       </tr>
     </tbody>
+
   </table>
 </div>

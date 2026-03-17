@@ -73,20 +73,24 @@ export class ReportesComponent implements OnInit {
     )
     .subscribe({
 
-      next:(data)=>{
+     next: (data: Reporte) => {
 
-        console.log("Datos recibidos:", data);
+  console.log("Datos recibidos:", data);
 
-        this.reportes = {
-          ...data,
-          ingresosTotales: Number(data.ingresosTotales),
-          mensajeAlertas: data.mensajeAlertas ?? ""
-        };
+  this.reportes = {
+    ingresosTotales: Number(data.ingresosTotales) || 0,
+    productosAgotados: data.productosAgotados ?? [],
+    productosStockBajo: data.productosStockBajo ?? [],
+    productosVendidos: data.productosVendidos ?? [],
+    ventasPorMetodo: data.ventasPorMetodo ?? [],
+    mensajeAlertas: data.mensajeAlertas ?? ""
+  };
 
-        this.rangoInicio = this.fechaInicio;
-        this.rangoFin = this.fechaFin;
+  this.rangoInicio = this.fechaInicio;
+  this.rangoFin = this.fechaFin;
 
-      },
+}
+      ,
 
       error:(err)=>{
 

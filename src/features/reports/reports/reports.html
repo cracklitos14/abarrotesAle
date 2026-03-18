@@ -47,17 +47,21 @@ class="btn-filtrar"
 
 <h3>Alertas Inventario</h3>
 
-<p *ngIf="reportes.mensajeAlertas">
-{{reportes.mensajeAlertas}}
+<p *ngIf="reportes?.mensajeAlertas">
+{{ reportes?.mensajeAlertas }}
 </p>
 
-<ul *ngIf="reportes.productosStockBajo && reportes.productosStockBajo.length>0">
+<ul *ngIf="reportes?.productosStockBajo?.length > 0">
 
 <li *ngFor="let prod of reportes.productosStockBajo">
-{{prod.nombre}} - Stock {{prod.stock}}
+{{ prod.nombre }} - Stock {{ prod.stock }}
 </li>
 
 </ul>
+
+<p *ngIf="!reportes?.productosStockBajo || reportes.productosStockBajo.length === 0">
+Sin alertas de inventario
+</p>
 
 </div>
 
@@ -68,7 +72,7 @@ class="btn-filtrar"
 
 <h3>Productos Vendidos</h3>
 
-<table *ngIf="reportes.productosVendidos && reportes.productosVendidos.length>0">
+<table>
 
 <thead>
 
@@ -82,11 +86,15 @@ class="btn-filtrar"
 
 <tbody>
 
-<tr *ngFor="let prod of reportes.productosVendidos">
+<tr *ngIf="!reportes?.productosVendidos || reportes.productosVendidos.length === 0">
+<td colspan="3">No hay productos vendidos</td>
+</tr>
 
-<td>{{prod.nombre}}</td>
-<td>{{prod.unidades}}</td>
-<td>{{prod.ingresos | currency:'MXN'}}</td>
+<tr *ngFor="let prod of reportes?.productosVendidos">
+
+<td>{{ prod.nombre }}</td>
+<td>{{ prod.unidades }}</td>
+<td>{{ prod.ingresos | currency:'MXN' }}</td>
 
 </tr>
 

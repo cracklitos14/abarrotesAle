@@ -42,9 +42,7 @@ export class ReportesComponent implements OnInit {
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
 
-  }
-
- loadReportesPorFechas(){
+  }loadReportesPorFechas(){
 
   if(this.cargando){
     return;
@@ -62,44 +60,40 @@ export class ReportesComponent implements OnInit {
 
   this.cargando = true;
 
-  console.log("Consultando reporte:", this.fechaInicio, this.fechaFin);
-
   this.reportsService
-    .getReportesPorFechas(this.fechaInicio,this.fechaFin)
-    .pipe(
-      finalize(() => {
-        this.cargando = false;   // 🔥 SIEMPRE libera el botón
-      })
-    )
-    .subscribe({
+  .getReportesPorFechas(this.fechaInicio,this.fechaFin)
+  .subscribe({
 
-     next: (data: Reporte) => {
+    next:(data:any)=>{
 
-  console.log("Datos recibidos:", data);
+      console.log("Datos recibidos:", data);
 
-  this.reportes = {
-    ingresosTotales: Number(data.ingresosTotales) || 0,
-    productosAgotados: data.productosAgotados ?? [],
-    productosStockBajo: data.productosStockBajo ?? [],
-    productosVendidos: data.productosVendidos ?? [],
-    ventasPorMetodo: data.ventasPorMetodo ?? [],
-    mensajeAlertas: data.mensajeAlertas ?? ""
-  };
+      this.reportes = {
+        ingresosTotales: Number(data.ingresosTotales) || 0,
+        productosAgotados: data.productosAgotados ?? [],
+        productosStockBajo: data.productosStockBajo ?? [],
+        productosVendidos: data.productosVendidos ?? [],
+        ventasPorMetodo: data.ventasPorMetodo ?? [],
+        mensajeAlertas: data.mensajeAlertas ?? ""
+      };
 
-  this.rangoInicio = this.fechaInicio;
-  this.rangoFin = this.fechaFin;
+      this.rangoInicio = this.fechaInicio;
+      this.rangoFin = this.fechaFin;
 
-}
-      ,
+      this.cargando = false;
 
-      error:(err)=>{
+    },
 
-        console.error("Error reporte:", err);
-        alert("Error al generar reporte");
+    error:(err)=>{
 
-      }
+      console.error("Error reporte:", err);
+      alert("Error al generar reporte");
 
-    });
+      this.cargando = false;
+
+    }
+
+  });
 
 }
 

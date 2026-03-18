@@ -15,27 +15,42 @@
   font-size: 32px;
   font-weight: 700;
   color: #111827;
-  letter-spacing: -0.5px;
 }
 
 /* Fecha */
 .fecha {
-  color: #6b7280;
+  color: #374151;
   font-size: 15px;
   margin-bottom: 20px;
+  font-weight: 500;
 }
 
 /* Totales */
+.totales {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
 .totales div {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 15px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.totales span {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
 }
 
 .totales strong {
   font-size: 18px;
+  font-weight: 700;
   color: #111827;
 }
 

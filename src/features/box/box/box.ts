@@ -5,6 +5,7 @@ import { BoxService, CierreCaja } from '../../../core/services/box';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ChangeDetectorRef } from '@angular/core';
+
 const LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...';
 
 @Component({
@@ -27,7 +28,7 @@ export class BoxComponent implements OnInit {
   mensaje = '';
   vistaLista = false;
   loading = false;
-  error = false; // ✅ IMPORTANTE
+  error = false;
 
   historial: CierreCaja[] = [];
   inicio = '';
@@ -37,35 +38,34 @@ export class BoxComponent implements OnInit {
   today = new Date();
 
   constructor(private boxService: BoxService,
-   private cdr: ChangeDetectorRef ){}
+              private cdr: ChangeDetectorRef ){}
 
   ngOnInit(): void {
     this.cargarResumen();
     this.cargarHistorial();
   }
 
-cargarResumen() {
-  this.loading = true;
-  this.error = false;
+  cargarResumen() {
+    this.loading = true;
+    this.error = false;
 
-  this.boxService.obtenerResumen(this.id_usuario).subscribe({
-    next: (res) => {
-      this.totalVentas = Number(res.total_ventas) || 0;
-      this.totalEfectivo = Number(res.total_efectivo) || 0;
-      this.totalTarjeta = Number(res.total_tarjeta) || 0;
+    this.boxService.obtenerResumen(this.id_usuario).subscribe({
+      next: (res) => {
+        this.totalVentas = Number(res.total_ventas) || 0;
+        this.totalEfectivo = Number(res.total_efectivo) || 0;
+        this.totalTarjeta = Number(res.total_tarjeta) || 0;
 
-      this.loading = false;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.error = true;
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
-      // 🔥 FORZAR RENDER REAL
-      this.cdr.detectChanges();
-    },
-    error: () => {
-      this.error = true;
-      this.loading = false;
-      this.cdr.detectChanges();
-    }
-  });
-}
   calcularDiferencia() {
     this.diferencia = this.efectivoContado - this.totalEfectivo;
   }
@@ -96,6 +96,20 @@ cargarResumen() {
   }
 
   cargarHistorial() {
+    const hoy = new Date().toISOString().split('T')[0];
+
+    // ✅ Validación de fechas futuras
+    if ((this.inicio && this.inicio > hoy) || (this.fin && this.fin > hoy)) {
+      this.mensaje = '⚠️ No puedes seleccionar fechas futuras';
+      return;
+    }
+
+    // ✅ Validación de rango incorrecto
+    if (this.inicio && this.fin && this.inicio > this.fin) {
+      this.mensaje = '⚠️ La fecha inicial no puede ser mayor que la final';
+      return;
+    }
+
     this.boxService.obtenerHistorial(this.inicio, this.fin)
       .subscribe({
         next: (data) => this.historial = data,
@@ -103,96 +117,100 @@ cargarResumen() {
       });
   }
 
-  
-exportarPDF() {
-  const doc = new jsPDF();
+  exportarPDF() {
+    const doc = new jsPDF();
 
-  // 🎯 TÍTULO
-  doc.setFontSize(16);
-  doc.text('Reporte de Cierres de Caja', 14, 15);
+    doc.setFontSize(16);
+    doc.text('Reporte de Cierres de Caja', 14, 15);
 
-  // 📅 FECHAS
-  doc.setFontSize(10);
-  doc.text(
-    `Periodo: ${this.inicio || 'Inicio'} - ${this.fin || 'Hoy'}`,
-    14,
-    22
-  );
-
-  // 💰 TOTALES
-  const totalVentas = this.historial.reduce(
-    (sum, c) => sum + Number(c.total_ventas), 0
-  );
-
-  doc.setFontSize(11);
-  doc.text(`Total de ventas: $${totalVentas.toFixed(2)}`, 14, 30);
-
-  // 📊 TABLA
-  autoTable(doc, {
-    startY: 36,
-    head: [[
-      'Fecha',
-      'Ventas',
-      'Efectivo Sistema',
-      'Efectivo Contado',
-      'Diferencia'
-    ]],
-    body: this.historial.map(c => [
-      c.fecha,
-      `$${Number(c.total_ventas).toFixed(2)}`,
-      `$${Number(c.total_efectivo).toFixed(2)}`,
-      `$${Number(c.efectivo_contado).toFixed(2)}`,
-      `$${Number(c.diferencia).toFixed(2)}`
-    ]),
-    theme: 'striped',
-    headStyles: {
-      fillColor: [33, 150, 243],
-      textColor: 255,
-      halign: 'center'
-    },
-    bodyStyles: {
-      halign: 'center'
-    },
-    styles: {
-      fontSize: 9
-    }
-  });
-
-  // 📄 PIE DE PÁGINA
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.text(
-      `Generado el ${new Date().toLocaleDateString()}`,
+      `Periodo: ${this.inicio || 'Inicio'} - ${this.fin || 'Hoy'}`,
       14,
-      doc.internal.pageSize.height - 10
+      22
     );
+
+    const totalVentas = this.historial.reduce(
+      (sum, c) => sum + Number(c.total_ventas), 0
+    );
+
+    doc.setFontSize(11);
+    doc.text(`Total de ventas: $${totalVentas.toFixed(2)}`, 14, 30);
+
+    autoTable(doc, {
+      startY: 36,
+      head: [[
+        'Fecha',
+        'Ventas',
+        'Efectivo Sistema',
+        'Efectivo Contado',
+        'Diferencia'
+      ]],
+      body: this.historial.map(c => [
+        c.fecha,
+        `$${Number(c.total_ventas).toFixed(2)}`,
+        `$${Number(c.total_efectivo).toFixed(2)}`,
+        `$${Number(c.efectivo_contado).toFixed(2)}`,
+        `$${Number(c.diferencia).toFixed(2)}`
+      ]),
+      theme: 'striped',
+      headStyles: {
+        fillColor: [33, 150, 243],
+        textColor: 255,
+        halign: 'center'
+      },
+      bodyStyles: {
+        halign: 'center'
+      },
+      styles: {
+        fontSize: 9
+      }
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.text(
+        `Generado el ${new Date().toLocaleDateString('es-MX')}`, // ✅ Fecha en español
+        14,
+        doc.internal.pageSize.height - 10
+      );
+    }
+
+    doc.save('Reporte_Cierres_Caja.pdf');
+
+    // ✅ Limpiar filtros después de exportar
+    this.inicio = '';
+    this.fin = '';
+    this.cargarHistorial();
   }
 
-  doc.save('Reporte_Cierres_Caja.pdf');
-}
+  exportarCierrePDF(c: CierreCaja) {
+    const doc = new jsPDF();
 
-exportarCierrePDF(c: CierreCaja) {
-  const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Cierre de Caja', 14, 15);
 
-  doc.setFontSize(16);
-  doc.text('Cierre de Caja', 14, 15);
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${c.fecha}`, 14, 25);
 
-  doc.setFontSize(12);
-  doc.text(`Fecha: ${c.fecha}`, 14, 25);
+    autoTable(doc, {
+      startY: 35,
+      body: [
+        ['Total Ventas', `$${c.total_ventas}`],
+        ['Efectivo Sistema', `$${c.total_efectivo}`],
+        ['Efectivo Contado', `$${c.efectivo_contado}`],
+        ['Diferencia', `$${c.diferencia}`]
+      ],
+      theme: 'grid'
+    });
 
-  autoTable(doc, {
-    startY: 35,
-    body: [
-      ['Total Ventas', `$${c.total_ventas}`],
-      ['Efectivo Sistema', `$${c.total_efectivo}`],
-      ['Efectivo Contado', `$${c.efectivo_contado}`],
-      ['Diferencia', `$${c.diferencia}`]
-    ],
-    theme: 'grid'
-  });
+    doc.save(`Cierre_${c.fecha}.pdf`);
 
-  doc.save(`Cierre_${c.fecha}.pdf`);
-}
+    // ✅ Limpiar filtros después de exportar
+    this.inicio = '';
+    this.fin = '';
+    this.cargarHistorial();
+  }
 }

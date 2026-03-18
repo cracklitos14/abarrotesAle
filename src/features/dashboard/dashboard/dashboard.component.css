@@ -96,21 +96,27 @@ th {
   color: #374151;
   font-weight: 600;
 }
-/* Encabezado principal */
-h2 {
-  margin-top: 40px;   /* separa del navbar */
-  margin-bottom: 8px; /* espacio con el subtítulo */
-  font-size: 24px;
+/* Contenedor general del encabezado */
+.dashboard-header {
+  max-width: 960px;   /* ancho controlado, centrado */
+  margin: 40px auto 30px auto; /* separación con navbar y tarjetas */
+  padding: 0 16px;
+  font-family: system-ui, sans-serif;
+}
+
+/* Título principal */
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 26px;
   font-weight: 700;
-  color: #111827;     /* gris oscuro elegante */
+  color: #111827; /* gris oscuro elegante */
   letter-spacing: -0.5px;
 }
 
 /* Subtítulo */
-h2 + p {
-  margin-top: 0;
-  margin-bottom: 24px; /* espacio con el grid */
-  font-size: 16px;
+.dashboard-header p {
+  margin: 4px 0 0 0;
+  font-size: 15px;
+  color: #6b7280; /* gris medio */
   font-weight: 400;
-  color: #6b7280;      /* gris medio */
 }

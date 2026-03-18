@@ -98,15 +98,21 @@ export class BoxComponent implements OnInit {
   cargarHistorial() {
     const hoy = new Date().toISOString().split('T')[0];
 
-    // ✅ Validación de fechas futuras
+    // ✅ Validación: solo filtrar si ambas fechas están completas
+    if (!this.inicio || !this.fin) {
+      this.mensaje = '⚠️ Selecciona ambas fechas para filtrar';
+      return;
+    }
+
+    // ✅ Validación: no permitir fechas futuras
     if ((this.inicio && this.inicio > hoy) || (this.fin && this.fin > hoy)) {
       this.mensaje = '⚠️ No puedes seleccionar fechas futuras';
       return;
     }
 
-    // ✅ Validación de rango incorrecto
+    // ✅ Validación: fecha fin no menor que inicio
     if (this.inicio && this.fin && this.inicio > this.fin) {
-      this.mensaje = '⚠️ La fecha inicial no puede ser mayor que la final';
+      this.mensaje = '⚠️ La fecha final no puede ser menor que la inicial';
       return;
     }
 

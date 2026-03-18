@@ -163,3 +163,20 @@
   background-color: #9ca3af;
   cursor: not-allowed;
 }
+
+
+#ticket-print {
+  display: none; /* oculto en pantalla */
+}
+
+@media print {
+  #ticket-print {
+    display: block; /* visible solo al imprimir */
+  }
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

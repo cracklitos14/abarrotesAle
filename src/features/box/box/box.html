@@ -63,14 +63,15 @@
     <input 
       type="date" 
       [(ngModel)]="inicio" 
-      [max]="today | date:'yyyy-MM-dd'">
+      [max]="todayStr"
+      (change)="onInicioChange()">
 
     <!-- ✅ Fin no puede ser menor que inicio -->
     <input 
       type="date" 
       [(ngModel)]="fin" 
-      [min]="inicio" 
-      [max]="today | date:'yyyy-MM-dd'">
+      [min]="minFin" 
+      [max]="todayStr">
 
     <!-- ✅ Filtra al primer toque -->
     <button (click)="cargarHistorial()">Filtrar</button>

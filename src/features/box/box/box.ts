@@ -37,12 +37,21 @@ export class BoxComponent implements OnInit {
   id_usuario = 1;
   today = new Date();
 
+  // ✅ Propiedades auxiliares para inputs de fecha
+  todayStr = '';
+  minFin = '';
+
   constructor(private boxService: BoxService,
               private cdr: ChangeDetectorRef ){}
 
   ngOnInit(): void {
+    this.todayStr = new Date().toISOString().split('T')[0]; // fecha de hoy en formato yyyy-MM-dd
     this.cargarResumen();
     this.cargarHistorial();
+  }
+
+  onInicioChange() {
+    this.minFin = this.inicio; // ✅ Ajusta el mínimo de la fecha fin
   }
 
   cargarResumen() {
@@ -80,7 +89,7 @@ export class BoxComponent implements OnInit {
       efectivo_contado: this.efectivoContado
     }).subscribe({
       next: () => {
-        this.mensaje = 'Caja cerrada correctamente';
+        this.mensaje = '✅ Caja cerrada correctamente';
         this.efectivoContado = 0;
         this.observaciones = '';
         this.diferencia = 0;
@@ -89,7 +98,7 @@ export class BoxComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.mensaje = 'Error al cerrar la caja';
+        this.mensaje = '❌ Error al cerrar la caja';
         this.loading = false;
       }
     });
@@ -98,7 +107,7 @@ export class BoxComponent implements OnInit {
   cargarHistorial() {
     const hoy = new Date().toISOString().split('T')[0];
 
-    // ✅ Validación: solo filtrar si ambas fechas están completas
+    // ✅ Validación: ambas fechas completas
     if (!this.inicio || !this.fin) {
       this.mensaje = '⚠️ Selecciona ambas fechas para filtrar';
       return;
@@ -186,9 +195,10 @@ export class BoxComponent implements OnInit {
 
     doc.save('Reporte_Cierres_Caja.pdf');
 
-    // ✅ Limpiar filtros después de exportar
+    // ✅ Limpiar filtros y resultados después de exportar
     this.inicio = '';
     this.fin = '';
+    this.historial = [];
     this.cargarHistorial();
   }
 
@@ -214,9 +224,10 @@ export class BoxComponent implements OnInit {
 
     doc.save(`Cierre_${c.fecha}.pdf`);
 
-    // ✅ Limpiar filtros después de exportar
+    // ✅ Limpiar filtros y resultados después de exportar
     this.inicio = '';
     this.fin = '';
+    this.historial = [];
     this.cargarHistorial();
   }
 }

@@ -16,7 +16,7 @@ export class ReportesComponent implements OnInit {
 
   fechaInicio: string = '';
   fechaFin: string = '';
-
+mostrarAlerta: boolean = false;
   rangoInicio: string = '';
   rangoFin: string = '';
 
@@ -117,7 +117,29 @@ export class ReportesComponent implements OnInit {
     };
 
   }
+ generarReporte() {
+  this.cargando = true;
 
+  this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
+    .subscribe({
+      next: (data) => {
+
+        // NO mostramos datos en pantalla, solo confirmamos
+        this.cargando = false;
+
+        this.mostrarAlerta = true;
+
+        setTimeout(() => {
+          this.mostrarAlerta = false;
+        }, 3000);
+
+      },
+      error: (err) => {
+        console.error(err);
+        this.cargando = false;
+      }
+    });
+}
   exportarReporteCSV() {
 
     const titulo = "Reporte de Ventas - Abarrotes Ale";

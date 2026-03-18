@@ -1,127 +1,46 @@
 <div class="contenedor-reportes">
 
-<h2>Reportes</h2>
+  <h2>Reportes</h2>
 
-<div class="filtros">
+  <div class="filtros">
 
-<label>Desde</label>
+    <label>Desde</label>
+    <input type="date" [(ngModel)]="fechaInicio" [max]="hoy">
 
-<input
-type="date"
-[(ngModel)]="fechaInicio"
-[max]="hoy">
+    <label>Hasta</label>
+    <input type="date" [(ngModel)]="fechaFin" [max]="hoy">
 
-<label>Hasta</label>
+    <button
+      class="btn-filtrar"
+      (click)="generarReporte()"
+      [disabled]="cargando">
 
-<input
-type="date"
-[(ngModel)]="fechaFin"
-[max]="hoy">
+      {{ cargando ? 'Generando...' : 'Generar Reporte' }}
 
-<button
-class="btn-filtrar"
-(click)="loadReportesPorFechas()"
-[disabled]="cargando">
+    </button>
 
-{{ cargando ? 'Generando...' : 'Generar Reporte' }}
+  </div>
 
-</button>
+  <!-- EXPORTAR (SE DEJA IGUAL) -->
+  <div class="exportar">
 
-</div>
+    <button
+      class="btn-exportar"
+      (click)="exportarReporteCSV()">
+      Exportar CSV
+    </button>
 
+    <button
+      class="btn-exportar pdf"
+      (click)="exportarReportePDF()">
+      Exportar PDF
+    </button>
 
-<div class="resumen">
+  </div>
 
-<div class="card">
-
-<h3>Ingresos Totales</h3>
-
-<p class="valor">
-{{ reportes?.ingresosTotales | currency:'MXN' }}
-</p>
-<pre>{{ reportes | json }}</pre>
-
-</div>
-
-
-<div class="card">
-
-<h3>Alertas Inventario</h3>
-
-<p *ngIf="reportes?.mensajeAlertas">
-{{ reportes?.mensajeAlertas }}
-</p>
-
-<ul *ngIf="reportes?.productosStockBajo?.length > 0">
-
-<li *ngFor="let prod of reportes.productosStockBajo">
-{{ prod.nombre }} - Stock {{ prod.stock }}
-</li>
-
-</ul>
-
-<p *ngIf="!reportes?.productosStockBajo || reportes.productosStockBajo.length === 0">
-Sin alertas de inventario
-</p>
-
-</div>
-
-</div>
-
-
-<div class="tabla">
-
-<h3>Productos Vendidos</h3>
-
-<table>
-
-<thead>
-
-<tr>
-<th>Producto</th>
-<th>Unidades</th>
-<th>Ingresos</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr *ngIf="!reportes?.productosVendidos || reportes.productosVendidos.length === 0">
-<td colspan="3">No hay productos vendidos</td>
-</tr>
-
-<tr *ngFor="let prod of reportes?.productosVendidos">
-
-<td>{{ prod.nombre }}</td>
-<td>{{ prod.unidades }}</td>
-<td>{{ prod.ingresos | currency:'MXN' }}</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-
-<div class="exportar">
-
-<button
-class="btn-exportar"
-(click)="exportarReporteCSV()">
-Exportar CSV
-</button>
-
-<button
-class="btn-exportar pdf"
-(click)="exportarReportePDF()">
-Exportar PDF
-</button>
-
-</div>
-
-<br><br>
+  <!-- ALERTA FLOTANTE -->
+  <div class="alerta" *ngIf="mostrarAlerta">
+    ✅ Reporte generado correctamente
+  </div>
 
 </div>

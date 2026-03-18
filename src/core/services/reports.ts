@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Reporte {
   ingresosTotales: number;
@@ -12,8 +12,6 @@ export interface Reporte {
   mensajeAlertas?: string;
 }
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -23,13 +21,40 @@ export class ReportsService {
 
   constructor(private http: HttpClient) {}
 
-  getReportes(periodo: string): Observable<Reporte> {
-    return this.http.get<Reporte>(`${this.baseUrl}/reportes.php?periodo=${periodo}`);
+  getReportesPorFechas(fechaInicio: string, fechaFin: string): Observable<Reporte> {
+
+    return this.http.get<any>(
+      `${this.baseUrl}/reportes.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
+    ).pipe(
+
+      map((data:any) => {
+
+        return {
+
+          ingresosTotales: Number(data.ingresosTotales) || 0,
+
+          productosAgotados: data.productosAgotados || [],
+
+          productosStockBajo: data.productosStockBajo || [],
+
+          ventasPorMetodo: data.ventasPorMetodo || [],
+
+          productosVendidos: (data.productosVendidos || []).map((p:any)=>({
+
+            nombre: p.nombre,
+            unidades: Number(p.unidades),
+            ingresos: Number(p.ingresos)
+
+          })),
+
+          mensajeAlertas: data.mensajeAlertas || ""
+
+        };
+
+      })
+
+    );
+
   }
 
-  getReportesPorFechas(fechaInicio: string, fechaFin: string): Observable<Reporte> {
-    return this.http.get<Reporte>(
-      `${this.baseUrl}/reportes.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
-    );
-  }
 }

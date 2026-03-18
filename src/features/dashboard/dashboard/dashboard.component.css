@@ -96,27 +96,26 @@ th {
   color: #374151;
   font-weight: 600;
 }
-/* Contenedor general del encabezado */
 .dashboard-header {
-  max-width: 960px;   /* ancho controlado, centrado */
-  margin: 40px auto 30px auto; /* separación con navbar y tarjetas */
+  margin: 40px 0 30px 0; /* separación con navbar y tarjetas */
   padding: 0 16px;
   font-family: system-ui, sans-serif;
+  text-align: left; /* asegura alineación izquierda */
 }
 
 /* Título principal */
 .dashboard-header h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: 32px;   /* más grande y jerárquico */
   font-weight: 700;
-  color: #111827; /* gris oscuro elegante */
+  color: #111827;    /* gris oscuro elegante */
   letter-spacing: -0.5px;
 }
 
 /* Subtítulo */
 .dashboard-header p {
-  margin: 4px 0 0 0;
-  font-size: 15px;
-  color: #6b7280; /* gris medio */
+  margin: 6px 0 0 0;
+  font-size: 16px;
+  color: #6b7280;    /* gris medio */
   font-weight: 400;
 }

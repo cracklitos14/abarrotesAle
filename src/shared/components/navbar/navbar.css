@@ -1,15 +1,16 @@
 .topbar {
   background: white;
-  padding: 12px 20px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid #e5e7eb; /* línea sutil */
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .brand .icon {
@@ -17,14 +18,16 @@
   color: white;
   padding: 8px;
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .menu {
   background: #3b82f6;
   display: flex;
-  gap: 5px;
-  padding: 8px 16px;
+  justify-content: center; /* centra los enlaces */
+  gap: 20px;
+  padding: 0.75rem 0;
+  width: 100%; /* ocupa todo el ancho */
 }
 
 .menu a {
@@ -54,7 +57,7 @@
   background-color: #dc3545;
   color: #fff;
   border: none;
-  padding: 0.4rem 0.8rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;

@@ -1,9 +1,8 @@
-/* Espaciado general debajo de la navbar */
+/* Layout general */
 .dashboard-grid, .dashboard-row, .dashboard-section {
-  margin-top: 30px; /* separa del navbar */
+  margin-top: 32px;
 }
 
-/* Grid principal */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -11,71 +10,61 @@
   margin-bottom: 40px;
 }
 
-/* Tarjetas */
-.card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb; /* borde más definido */
-  box-shadow: 0 2px 6px rgba(0,0,0,.05); /* sombra ligera y elegante */
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px); /* efecto sutil al pasar el mouse */
-}
-
-.card h4 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #374151; /* gris más profesional */
-}
-
-.card strong {
-  font-size: 28px;
-  display: block;
-  margin: 12px 0;
-  color: #111827;
-  font-weight: 700;
-}
-
-.card small {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-/* Secciones */
 .dashboard-row {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 24px;
-  margin-top: 30px;
 }
 
-.dashboard-section {
-  background: white;
+/* Tarjetas y secciones */
+.card, .dashboard-section {
+  background: #ffffff;
   padding: 24px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  transition: transform 0.2s ease;
+}
+
+.card:hover, .dashboard-section:hover {
+  transform: translateY(-2px);
+}
+
+/* Tipografía */
+.dashboard-header h2 {
+  font-size: 34px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.dashboard-header p {
+  font-size: 17px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.card h4, .dashboard-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 12px 0;
 }
 
 .dashboard-section h3 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2563eb; /* azul corporativo */
+  color: #2563eb; /* acento corporativo */
 }
 
-/* Gráfica */
-.grafica-card {
-  height: 240px;
+.card strong {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 12px 0;
 }
 
-.grafica-card canvas {
-  width: 100% !important;
-  height: 180px !important;
+.card small {
+  font-size: 13px;
+  color: #6b7280;
 }
 
 /* Tabla */
@@ -96,27 +85,17 @@ th {
   color: #374151;
   font-weight: 600;
 }
-.dashboard-header {
-  margin: 40px 0 30px 0;   /* separación con navbar y tarjetas */
-  padding: 0 24px;          /* espacio lateral */
-  font-family: system-ui, sans-serif;
-  text-align: left;         /* fuerza alineación izquierda */
-  max-width: 100%;          /* ocupa todo el ancho */
+
+tbody tr:nth-child(even) {
+  background-color: #f9fafb; /* alterna filas */
 }
 
-/* Título principal */
-.dashboard-header h2 {
-  margin: 0;
-  font-size: 34px;          /* más grande y jerárquico */
-  font-weight: 700;
-  color: #111827;           /* gris oscuro elegante */
-  letter-spacing: -0.5px;
+/* Gráfica */
+.grafica-card {
+  height: 240px;
 }
 
-/* Subtítulo */
-.dashboard-header p {
-  margin: 6px 0 0 0;
-  font-size: 17px;
-  color: #6b7280;           /* gris medio */
-  font-weight: 400;
+.grafica-card canvas {
+  width: 100% !important;
+  height: 180px !important;
 }

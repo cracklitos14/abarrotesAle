@@ -1,89 +1,68 @@
-:host {
-  display: block;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
 .topbar {
   background: white;
-  padding: 12px 40px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #e5e7eb; /* línea sutil */
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .brand .icon {
   background: #2563eb;
   color: white;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 1.2rem;
-}
-
-.brand strong {
+  padding: 8px;
+  border-radius: 50%;
   font-size: 1.1rem;
-  color: #111827;
-}
-
-.brand small {
-  display: block;
-  color: #6b7280;
-  font-size: 0.75rem;
 }
 
 .menu {
-  background: white;
+  background: #3b82f6;
   display: flex;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 0 40px;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: center; /* centra los enlaces */
+  gap: 20px;
+  padding: 0.75rem 0;
+  width: 100%; /* ocupa todo el ancho */
 }
 
 .menu a {
-  color: #4b5563;
+  color: white;
   text-decoration: none;
-  padding: 14px 16px;
-  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-weight: 500;
-  transition: all 0.2s ease;
-  border-bottom: 2px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.menu a:hover {
-  color: #2563eb;
-  background: #f8fafc;
+.menu a:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .menu a.active {
+  background: white;
   color: #2563eb;
-  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+}
+
+.navbar-right {
+  margin-left: auto;
 }
 
 .btn-logout {
-  background: #fff1f2;
-  color: #e11d48;
-  border: 1px solid #ffe4e6;
-  padding: 8px 16px;
-  border-radius: 6px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
+  font-size: 0.9rem;
 }
 
 .btn-logout:hover {
-  background: #ffe4e6;
+  background-color: #c82333;
 }

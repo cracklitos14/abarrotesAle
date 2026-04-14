@@ -1,46 +1,47 @@
-<div class="contenedor-reportes">
+<div class="reportes-container">
+  <div class="encabezado-container">
+    <div>
+      <h2>Reportes y Análisis</h2>
+      <p style="color: #64748b; margin: 0;">Consulta el rendimiento de tu negocio en un periodo determinado</p>
+    </div>
+  </div>
 
-  <h2>Reportes</h2>
+  <div class="filtros-card">
+    <div class="filtro-group">
+      <label class="form-label">Fecha de Inicio</label>
+      <input type="date" [(ngModel)]="fechaInicio" [max]="hoy" class="form-control">
+    </div>
 
-  <div class="filtros">
+    <div class="filtro-group">
+      <label class="form-label">Fecha de Fin</label>
+      <input type="date" [(ngModel)]="fechaFin" [max]="hoy" class="form-control">
+    </div>
 
-    <label>Desde</label>
-    <input type="date" [(ngModel)]="fechaInicio" [max]="hoy">
-
-    <label>Hasta</label>
-    <input type="date" [(ngModel)]="fechaFin" [max]="hoy">
-
-    <button
-      class="btn-filtrar"
-      (click)="generarReporte()"
+    <button 
+      class="btn-generar" 
+      (click)="generarReporte()" 
       [disabled]="cargando">
-
-      {{ cargando ? 'Generando...' : 'Generar Reporte' }}
-
+      <span *ngIf="!cargando">📊 Generar Reporte</span>
+      <span *ngIf="cargando">⏳ Generando...</span>
     </button>
-
   </div>
 
-  <!-- EXPORTAR (SE DEJA IGUAL) -->
-  <div class="exportar">
-
-    <button
-      class="btn-exportar"
-      (click)="exportarReporteCSV()">
-      Exportar CSV
+  <div class="export-actions">
+    <span class="text-muted fw-medium me-2" style="font-size: 14px;">Exportar datos:</span>
+    
+    <button class="btn-export csv" (click)="exportarReporteCSV()">
+      <span class="icon">📁</span> CSV
     </button>
 
-    <button
-      class="btn-exportar pdf"
-      (click)="exportarReportePDF()">
-      Exportar PDF
+    <button class="btn-export pdf" (click)="exportarReportePDF()">
+      <span class="icon">📄</span> PDF
     </button>
-
   </div>
 
-  <!-- ALERTA FLOTANTE -->
-  <div class="alerta" *ngIf="mostrarAlerta">
-    ✅ Reporte generado correctamente
+  <div class="alerta-toast" *ngIf="mostrarAlerta">
+    <div class="toast-content">
+      <span class="me-2">✅</span> Reporte generado correctamente
+    </div>
   </div>
 
 </div>

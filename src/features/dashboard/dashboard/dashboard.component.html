@@ -1,87 +1,73 @@
 <div class="dashboard-header">
   <h2>Vista general</h2>
-  <p>Resumen del día</p>
+  <p>Resumen del día de hoy</p>
 </div>
 
 <div class="dashboard-grid">
+  <div class="card">
+    <h4>Ventas de hoy</h4>
+    <strong>{{ dashboard.ventasHoy | currency:'MXN' }}</strong>
+    <small>Ingresos totales</small>
+  </div>
 
-<div class="card">
-<h4>Ventas de hoy</h4>
-<strong>{{ dashboard.ventasHoy | currency:'MXN' }}</strong>
-<small>Ingresos totales</small>
+  <div class="card">
+    <h4>Productos vendidos</h4>
+    <strong>{{ dashboard.productosVendidos }}</strong>
+    <small>Unidades</small>
+  </div>
+
+  <div class="card">
+    <h4>Productos en stock</h4>
+    <strong>{{ dashboard.stock }}</strong>
+    <small>Disponibles</small>
+  </div>
+
+  <div class="card">
+    <h4>Categorías</h4>
+    <strong>{{ dashboard.categorias }}</strong>
+    <small>Registradas</small>
+  </div>
 </div>
-
-<div class="card">
-<h4>Productos vendidos</h4>
-<strong>{{ dashboard.productosVendidos }}</strong>
-<small>Unidades</small>
-</div>
-
-<div class="card">
-<h4>Productos en stock</h4>
-<strong>{{ dashboard.stock }}</strong>
-<small>Disponibles</small>
-</div>
-
-<div class="card">
-<h4>Categorías</h4>
-<strong>{{ dashboard.categorias }}</strong>
-<small>Registradas</small>
-</div>
-
-</div>
-
 
 <div class="dashboard-row">
+  <div class="dashboard-section">
+    <h3>Última Venta</h3>
+    <div class="ultima-venta-info" *ngIf="dashboard.ultimaVenta">
+      <div style="margin-bottom: 8px;">
+        <span style="color: #6b7280; font-size: 13px;">Hora:</span> 
+        <span style="font-weight: 600;"> {{dashboard.ultimaVenta.hora}}</span>
+      </div>
+      <div>
+        <span style="color: #6b7280; font-size: 13px;">Total:</span> 
+        <span style="font-weight: 600; color: #10b981;"> {{dashboard.ultimaVenta.total | currency:'MXN'}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-section grafica-card">
+    <h3>Ventas del Día</h3>
+    <canvas id="graficaVentas"></canvas>
+  </div>
+</div>
 
 <div class="dashboard-section">
-
-<h3>Última Venta</h3>
-
-<p *ngIf="dashboard.ultimaVenta">
-Hora: {{dashboard.ultimaVenta.hora}} <br>
-Total: {{dashboard.ultimaVenta.total | currency:'MXN'}}
-</p>
-
-</div>
-
-<div class="dashboard-section grafica-card">
-
-<h3>Ventas del Día</h3>
-
-<canvas id="graficaVentas"></canvas>
-
-</div>
-
-</div>
-
-
-<div class="dashboard-section">
-
-<h3>Últimos Productos Vendidos</h3>
-
-<table>
-
-<thead>
-<tr>
-<th>Hora</th>
-<th>Producto</th>
-<th>Total</th>
-</tr>
-</thead>
-
-<tbody>
-
-<tr *ngFor="let a of dashboard.actividad">
-
-<td>{{a.hora}}</td>
-<td>{{a.nombre}}</td>
-<td>{{a.subtotal | currency:'MXN'}}</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
+  <h3>Últimos Productos Vendidos</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Producto</th>
+        <th style="text-align: right;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of dashboard.actividad">
+        <td>{{a.hora}}</td>
+        <td style="font-weight: 500;">{{a.nombre}}</td>
+        <td style="text-align: right; font-weight: 600; color: #111827;">
+          {{a.subtotal | currency:'MXN'}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

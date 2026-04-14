@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Asegúrate de importar esto para pipes si los usas
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-footer',
@@ -12,17 +12,22 @@ export class FooterComponent implements OnInit, OnDestroy {
   fechaHora: string = '';
   private intervalo: any;
 
+  // Inyectamos ChangeDetectorRef para forzar la actualización de la vista
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnInit(): void {
-    this.actualizarFechaHora(); // Inicializa inmediatamente
+    this.actualizarFechaHora(); // Carga inicial
     
-    // Cambiamos a 1000ms (1 segundo) para que el cambio de minuto sea instantáneo
+    // Usamos 1000ms (1 segundo) para que Angular detecte el cambio de minuto al instante
     this.intervalo = setInterval(() => {
       this.actualizarFechaHora();
-    }, 1000); 
+      // Forzamos a Angular a re-dibujar el componente
+      this.cdr.detectChanges();
+    }, 1000);
   }
 
   ngOnDestroy(): void {
-    // Es vital limpiar el intervalo para evitar fugas de memoria
+    // Limpiamos el proceso para evitar que consuma RAM al cerrar la app
     if (this.intervalo) {
       clearInterval(this.intervalo);
     }
@@ -30,15 +35,9 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   private actualizarFechaHora(): void {
     const ahora = new Date();
-    // Agregué 'seconds' opcionalmente por si quieres que se vea el segundero
     this.fechaHora = ahora.toLocaleString('es-MX', {
-      weekday: 'long', // Opcional: "lunes"
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit' // Quita esta línea si no quieres ver los segundos
+      dateStyle: 'medium',
+      timeStyle: 'short' // Cambia a 'medium' si quieres ver los segundos
     });
   }
 }

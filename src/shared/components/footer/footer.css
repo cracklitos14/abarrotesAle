@@ -1,20 +1,3 @@
-.copy {
-  font-weight: 400;
-  letter-spacing: 0.025em;
-  color: #374151; /* Gris oscuro para buena legibilidad */
-}
-
-/* Punto verde de "sistema activo" */
-.fecha-hora::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background-color: #10b981; /* Verde accesible */
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 6px; /* Espacio entre el punto y la hora */
-}
-
 :host {
   display: block;
   position: fixed;
@@ -25,11 +8,11 @@
 }
 
 .footer {
-  background-color: #f9fafb; /* Fondo claro, consistente con dashboard */
-  color: #4b5563; /* Texto gris medio */
+  background-color: #f9fafb; /* Fondo claro consistente */
+  color: #4b5563;
   padding: 12px 40px;
   border-top: 1px solid #e5e7eb;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04); /* Sombra más ligera */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .footer-content {
@@ -41,7 +24,35 @@
   margin: 0 auto;
 }
 
+.copy {
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  color: #374151;
+}
+
 .fecha-hora {
   font-weight: 600;
-  color: #2563eb; /* Azul consistente con métricas destacadas */
+  color: #2563eb; /* Azul para resaltar la hora */
+  display: flex;
+  align-items: center;
+}
+
+/* Punto verde de "sistema activo" */
+.fecha-hora::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #10b981; /* Verde esmeralda */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  /* Animación de pulso para que se vea "vivo" */
+  box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }

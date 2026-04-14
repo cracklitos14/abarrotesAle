@@ -16,7 +16,9 @@ export class ReportesComponent implements OnInit {
 
   fechaInicio: string = '';
   fechaFin: string = '';
-mostrarAlerta: boolean = false;
+
+  mostrarAlerta: boolean = false;
+
   rangoInicio: string = '';
   rangoFin: string = '';
 
@@ -36,17 +38,14 @@ mostrarAlerta: boolean = false;
   constructor(private reportsService: ReportsService) {}
 
   ngOnInit(){
-
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
-
   }
 
-  loadReportesPorFechas(){
+  // 🔥 FUNCIÓN PRINCIPAL CORREGIDA
+  generarReporte() {
 
-    if(this.cargando){
-      return;
-    }
+    if(this.cargando) return;
 
     if(!this.fechaInicio || !this.fechaFin){
       alert("Debes seleccionar ambas fechas");
@@ -60,47 +59,33 @@ mostrarAlerta: boolean = false;
 
     this.cargando = true;
 
-    this.reportsService
-    .getReportesPorFechas(this.fechaInicio,this.fechaFin)
-    .subscribe({
+    this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
+      .subscribe({
+        next: (data) => {
 
-      next:(data:any)=>{
+          // ✅ AHORA SÍ GUARDAMOS LOS DATOS
+          this.reportes = data;
 
-        console.log("Datos recibidos:", data);
+          this.rangoInicio = this.fechaInicio;
+          this.rangoFin = this.fechaFin;
 
-        const nuevoReporte = {
-          ingresosTotales: Number(data.ingresosTotales) || 0,
-          productosAgotados: data.productosAgotados ?? [],
-          productosStockBajo: data.productosStockBajo ?? [],
-          productosVendidos: data.productosVendidos ?? [],
-          ventasPorMetodo: data.ventasPorMetodo ?? [],
-          mensajeAlertas: data.mensajeAlertas ?? ""
-        };
+          this.cargando = false;
 
-        this.reportes = { ...nuevoReporte };
+          this.mostrarAlerta = true;
 
-        this.rangoInicio = this.fechaInicio;
-        this.rangoFin = this.fechaFin;
-
-        this.cargando = false;
-
-      },
-
-      error:(err)=>{
-
-        console.error("Error reporte:", err);
-        alert("Error al generar reporte");
-
-        this.cargando = false;
-
-      }
-
-    });
-
+          setTimeout(() => {
+            this.mostrarAlerta = false;
+          }, 3000);
+        },
+        error: (err) => {
+          console.error(err);
+          alert("Error al generar reporte");
+          this.cargando = false;
+        }
+      });
   }
 
   limpiarFiltros(){
-
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
 
@@ -115,31 +100,9 @@ mostrarAlerta: boolean = false;
       productosVendidos: [],
       mensajeAlertas: "Seleccione un rango de fechas"
     };
-
   }
- generarReporte() {
-  this.cargando = true;
 
-  this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
-    .subscribe({
-      next: (data) => {
-
-        // NO mostramos datos en pantalla, solo confirmamos
-        this.cargando = false;
-
-        this.mostrarAlerta = true;
-
-        setTimeout(() => {
-          this.mostrarAlerta = false;
-        }, 3000);
-
-      },
-      error: (err) => {
-        console.error(err);
-        this.cargando = false;
-      }
-    });
-}
+  // ✅ CSV CORREGIDO
   exportarReporteCSV() {
 
     const titulo = "Reporte de Ventas - Abarrotes Ale";
@@ -174,36 +137,31 @@ mostrarAlerta: boolean = false;
     const encodedUri = encodeURI(csvContent);
 
     const link = document.createElement("a");
-
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "Reporte_Abarrotes_Ale.csv");
 
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
 
-    this.limpiarFiltros();
-
+    // ❌ YA NO BORRAMOS DATOS
   }
 
+  // ✅ PDF CORREGIDO
   exportarReportePDF() {
 
     const doc = new jsPDF();
-
     let currentY = 20;
 
     doc.setFontSize(16);
-    doc.text("Reporte de Ventas - Abarrotes Ale", 50, currentY);
+    doc.text("Reporte de Ventas - Abarrotes Ale", 40, currentY);
 
     currentY += 10;
-
-    doc.setFontSize(12);
 
     const inicio = this.rangoInicio || "N/A";
     const fin = this.rangoFin || "N/A";
 
+    doc.setFontSize(12);
     doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
 
     currentY += 15;
@@ -218,39 +176,34 @@ mostrarAlerta: boolean = false;
 
     currentY += 15;
 
+    // 🔹 AGOTADOS
     doc.setFontSize(14);
     doc.text("Productos Agotados", 14, currentY);
-
-    currentY += 5;
 
     if (this.reportes.productosAgotados.length > 0) {
 
       autoTable(doc,{
-        startY: currentY,
+        startY: currentY + 5,
         head:[["Producto","Stock"]],
         body:this.reportes.productosAgotados.map((p:any)=>[p.nombre,p.stock])
       });
 
-      currentY = (doc as any).lastAutoTable.finalY + 15;
+      const finalY = (doc as any).lastAutoTable?.finalY || currentY;
+      currentY = finalY + 15;
 
     } else {
-
-      doc.setFontSize(12);
-      doc.text("Ninguno",14,currentY);
-
+      doc.text("Ninguno",14,currentY + 8);
       currentY += 15;
-
     }
 
+    // 🔹 STOCK BAJO
     doc.setFontSize(14);
     doc.text("Productos con Stock Bajo",14,currentY);
-
-    currentY += 5;
 
     if(this.reportes.productosStockBajo.length > 0){
 
       autoTable(doc,{
-        startY:currentY,
+        startY: currentY + 5,
         head:[["Producto","Stock","Mínimo"]],
         body:this.reportes.productosStockBajo.map((p:any)=>[
           p.nombre,
@@ -259,27 +212,23 @@ mostrarAlerta: boolean = false;
         ])
       });
 
-      currentY = (doc as any).lastAutoTable.finalY + 15;
+      const finalY = (doc as any).lastAutoTable?.finalY || currentY;
+      currentY = finalY + 15;
 
-    }else{
-
-      doc.setFontSize(12);
-      doc.text("Ninguno",14,currentY);
-
+    } else {
+      doc.text("Ninguno",14,currentY + 8);
       currentY += 15;
-
     }
 
+    // 🔹 VENDIDOS
     doc.setFontSize(14);
     doc.text("Productos Vendidos",14,currentY);
-
-    currentY += 5;
 
     if(this.reportes.productosVendidos.length > 0){
 
       autoTable(doc,{
-        startY:currentY,
-        head:[["Producto","Unidades","Ingresos (MXN)"]],
+        startY: currentY + 5,
+        head:[["Producto","Unidades","Ingresos"]],
         body:this.reportes.productosVendidos.map((p:any)=>[
           p.nombre,
           p.unidades,
@@ -287,17 +236,11 @@ mostrarAlerta: boolean = false;
         ])
       });
 
-    }else{
-
-      doc.setFontSize(12);
-      doc.text("No hay productos vendidos",14,currentY);
-
+    } else {
+      doc.text("No hay productos vendidos",14,currentY + 8);
     }
 
     doc.save("Reporte_Abarrotes_Ale.pdf");
-
-    this.limpiarFiltros();
-
   }
 
 }

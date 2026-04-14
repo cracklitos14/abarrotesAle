@@ -5,10 +5,10 @@ import { Observable, map } from 'rxjs';
 
 export interface Reporte {
   ingresosTotales: number;
-  productosAgotados: { nombre: string; stock: number; stock_minimo: number }[];
-  productosStockBajo: { nombre: string; stock: number; stock_minimo: number }[];
-  ventasPorMetodo: { nombre: string; transacciones: number; monto: number }[];
-  productosVendidos: { nombre: string; unidades: number; ingresos: number }[];
+  productosAgotados: any[];
+  productosStockBajo: any[];
+  ventasPorMetodo: any[];
+  productosVendidos: any[];
   mensajeAlertas?: string;
 }
 
@@ -26,35 +26,18 @@ export class ReportsService {
     return this.http.get<any>(
       `${this.baseUrl}/reportes.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
     ).pipe(
-
-      map((data:any) => {
-
-        return {
-
-          ingresosTotales: Number(data.ingresosTotales) || 0,
-
-          productosAgotados: data.productosAgotados || [],
-
-          productosStockBajo: data.productosStockBajo || [],
-
-          ventasPorMetodo: data.ventasPorMetodo || [],
-
-          productosVendidos: (data.productosVendidos || []).map((p:any)=>({
-
-            nombre: p.nombre,
-            unidades: Number(p.unidades),
-            ingresos: Number(p.ingresos)
-
-          })),
-
-          mensajeAlertas: data.mensajeAlertas || ""
-
-        };
-
-      })
-
+      map((data:any) => ({
+        ingresosTotales: Number(data.ingresosTotales) || 0,
+        productosAgotados: data.productosAgotados || [],
+        productosStockBajo: data.productosStockBajo || [],
+        ventasPorMetodo: data.ventasPorMetodo || [],
+        productosVendidos: (data.productosVendidos || []).map((p:any)=>({
+          nombre: p.nombre,
+          unidades: Number(p.unidades),
+          ingresos: Number(p.ingresos)
+        })),
+        mensajeAlertas: data.mensajeAlertas || ""
+      }))
     );
-
   }
-
 }

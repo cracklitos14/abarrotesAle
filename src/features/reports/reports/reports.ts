@@ -32,7 +32,7 @@ export class ReportesComponent implements OnInit {
     productosStockBajo: [],
     ventasPorMetodo: [],
     productosVendidos: [],
-    mensajeAlertas: "Seleccione un rango de fechas"
+    mensajeAlertas: ""
   };
 
   constructor(private reportsService: ReportsService) {}
@@ -42,7 +42,7 @@ export class ReportesComponent implements OnInit {
     this.fechaFin = this.hoy;
   }
 
-  // 🔥 FUNCIÓN PRINCIPAL CORREGIDA
+  // 🔥 GENERAR REPORTE PRO
   generarReporte() {
 
     if(this.cargando) return;
@@ -58,24 +58,37 @@ export class ReportesComponent implements OnInit {
     }
 
     this.cargando = true;
+    this.mostrarAlerta = false;
+
+    const inicioTiempo = Date.now();
 
     this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
       .subscribe({
         next: (data) => {
 
-          // ✅ AHORA SÍ GUARDAMOS LOS DATOS
           this.reportes = data;
-
           this.rangoInicio = this.fechaInicio;
           this.rangoFin = this.fechaFin;
 
-          this.cargando = false;
+          const tiempoTranscurrido = Date.now() - inicioTiempo;
+          const tiempoMinimo = 1500;
 
-          this.mostrarAlerta = true;
+          const delay = tiempoTranscurrido < tiempoMinimo 
+            ? tiempoMinimo - tiempoTranscurrido 
+            : 0;
 
           setTimeout(() => {
-            this.mostrarAlerta = false;
-          }, 3000);
+
+            this.cargando = false;
+
+            this.mostrarAlerta = true;
+
+            setTimeout(() => {
+              this.mostrarAlerta = false;
+            }, 3000);
+
+          }, delay);
+
         },
         error: (err) => {
           console.error(err);
@@ -98,11 +111,10 @@ export class ReportesComponent implements OnInit {
       productosStockBajo: [],
       ventasPorMetodo: [],
       productosVendidos: [],
-      mensajeAlertas: "Seleccione un rango de fechas"
+      mensajeAlertas: ""
     };
   }
 
-  // ✅ CSV CORREGIDO
   exportarReporteCSV() {
 
     const titulo = "Reporte de Ventas - Abarrotes Ale";
@@ -143,11 +155,8 @@ export class ReportesComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // ❌ YA NO BORRAMOS DATOS
   }
 
-  // ✅ PDF CORREGIDO
   exportarReportePDF() {
 
     const doc = new jsPDF();
@@ -176,7 +185,7 @@ export class ReportesComponent implements OnInit {
 
     currentY += 15;
 
-    // 🔹 AGOTADOS
+    // Agotados
     doc.setFontSize(14);
     doc.text("Productos Agotados", 14, currentY);
 
@@ -196,7 +205,7 @@ export class ReportesComponent implements OnInit {
       currentY += 15;
     }
 
-    // 🔹 STOCK BAJO
+    // Stock bajo
     doc.setFontSize(14);
     doc.text("Productos con Stock Bajo",14,currentY);
 
@@ -220,7 +229,7 @@ export class ReportesComponent implements OnInit {
       currentY += 15;
     }
 
-    // 🔹 VENDIDOS
+    // Vendidos
     doc.setFontSize(14);
     doc.text("Productos Vendidos",14,currentY);
 

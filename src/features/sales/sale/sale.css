@@ -1,182 +1,234 @@
-/* Encabezado de la sección Ventas */
+:host {
+  display: block;
+  background-color: #f1f5f9; /* Fondo gris claro */
+  padding: 24px;
+  padding-bottom: 100px; /* Margen para el footer fijo */
+  min-height: calc(100vh - 120px);
+}
+
+/* Encabezado */
 .encabezado {
-  margin: 40px 0 20px 0;
-  padding: 0 24px;
-  font-family: system-ui, sans-serif;
-  text-align: left;
+  margin-bottom: 24px;
 }
 
 .encabezado h2 {
-  margin: 0;
-  font-size: 32px;   /* más grande y jerárquico */
+  font-size: 28px;
   font-weight: 700;
   color: #111827;
-  letter-spacing: -0.5px;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.encabezado .subtitulo {
-  margin: 6px 0 0 0;
-  font-size: 16px;
-  color: #6b7280;    /* gris medio */
-  font-weight: 400;
-}
-
-/* Layout general */
+/* Layout de Ventas */
 .sale-layout {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 380px; /* Área de productos | Carrito */
   gap: 24px;
-  padding: 0 24px;
+  align-items: start;
 }
 
-/* Productos */
+/* Buscador de Productos */
 .products input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
+.products input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Cuadrícula de Productos */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .product-card {
   background: white;
-  padding: 16px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .product-card:hover {
-  background: #f9fafb;
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+  border-color: #2563eb;
 }
 
 .product-card h4 {
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
-  color: #374151;
+  color: #4b5563;
 }
 
 .product-card strong {
   display: block;
-  margin: 8px 0;
-  font-size: 18px;
+  font-size: 22px;
   color: #111827;
+  margin: 12px 0;
 }
 
 .product-card small {
-  color: #6b7280;
-  font-size: 13px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-/* Carrito */
+/* Carrito Estático (Sticky) */
 .cart {
   background: white;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  
+  /* Posicionamiento inteligente */
+  position: sticky;
+  top: 90px; 
+  max-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
 }
 
 .cart h3 {
-  margin-top: 0;
+  margin: 0 0 16px 0;
   font-size: 18px;
-  font-weight: 600;
-  color: #2563eb;
+  color: #111827;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Scroll interno para items del carrito */
+.cart-items-container {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
 }
 
 .cart-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f8fafc;
 }
 
 .item-info span {
-  font-weight: 500;
-  color: #111827;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
 }
 
-.item-info small {
-  color: #6b7280;
-  font-size: 13px;
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 8px;
 }
 
 .qty-controls button {
-  background: #f3f4f6;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.qty-controls button:hover {
-  background: #e5e7eb;
-}
-
-/* Botones de pago */
-.payment-btn {
-  padding: 10px 16px;
-  margin-right: 10px;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  color: #333;
+  background: white;
+  border: 1px solid #e2e8f0;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.payment-btn.active {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  color: white;
+/* Sección de Totales y Pago */
+.cart-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid #f1f5f9;
 }
 
-.payment-btn:hover {
-  background-color: #eff6ff;
-}
-
-/* Botón finalizar */
-.btn-success {
-  width: 100%;
-  background: #22c55e;
-  color: white;
-  padding: 12px;
-  margin-top: 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.btn-success:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
-
-
-#ticket-print {
-  display: none; /* oculto en pantalla */
-}
-
-@media print {
-  #ticket-print {
-    display: block; /* visible solo al imprimir */
-  }
-}
-
-.encabezado {
+.total-display {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 16px;
 }
+
+.payment-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.payment-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payment-btn.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.btn-success {
+  width: 100%;
+  background: #10b981;
+  color: white;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #059669;
+}
+
+.btn-success:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Caja de Efectivo */
+.cash-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Mantengo tu estilo del ticket intacto */
+#ticket-print { display: none; }
+@media print { #ticket-print { display: block; } }

@@ -1,16 +1,16 @@
 <div class="encabezado">
-    <h2>Ventas</h2>
-    <p class="subtitulo"></p>
-  </div>
-<div class="sale-layout">
+  <h2>Ventas</h2>
+  <p class="subtitulo" style="margin-top: 4px; color: #6b7280;">Realiza cobros de manera rápida</p>
+</div>
 
-  <!-- PRODUCTOS -->
+<div class="sale-layout">
   <div class="products">
     <input
-      placeholder="Nombre o código"
+      type="text"
+      placeholder="🔍 Buscar por nombre o código de barras..."
       [(ngModel)]="search"
-    (ngModelChange)="onSearchChange()"
-      />
+      (ngModelChange)="onSearchChange()"
+    />
     
     <div class="product-grid">
       <div
@@ -19,96 +19,86 @@
         (click)="addToCart(p)"
       >
         <h4>{{ p.name }}</h4>
-        <strong>${{ p.price }}  </strong>
-        <small>    stock: {{ p.stock }}  </small>
+        <strong>${{ p.price }}</strong>
+        <small>Disponibles: {{ p.stock }}</small>
       </div>
     </div>
   </div>
 
-  <!-- CARRITO -->
   <div class="cart">
-    <h3>Carrito ({{ cart.length }})</h3>
+    <h3>Detalle de Venta ({{ cart.length }})</h3>
 
-    <div *ngFor="let item of cart" class="cart-item">
-      <div class="item-info">
-        <span>{{ item.name }}</span>
-        <small>${{ item.price }}</small>
+    <div class="cart-items-container">
+      <div *ngFor="let item of cart" class="cart-item">
+        <div class="item-info">
+          <span>{{ item.name }}</span>
+          <small style="color: #64748b;">${{ item.price }} unit.</small>
+        </div>
+
+        <div class="qty-controls">
+          <button (click)="decrease(item)">−</button>
+          <span style="font-weight: 700; min-width: 20px; text-align: center;">{{ item.qty }}</span>
+          <button (click)="increase(item)">+</button>
+        </div>
       </div>
-
-      <div class="qty-controls">
-        <button (click)="decrease(item)">−</button>
-        <span>{{ item.qty }}</span>
-        <button (click)="increase(item)">+</button>
-      </div>
-
-      <strong>${{ item.price * item.qty }}</strong>
     </div>
 
-    <hr />
+    <div class="cart-footer">
+      <div class="total-display">
+        <span>Total</span>
+        <span style="color: #2563eb;">${{ total }}</span>
+      </div>
 
-    <p>Total: <strong>${{ total }}</strong></p>
-    <div *ngIf="paymentMethod === 'efectivo'" class="cash-box">
-  <label>Efectivo recibido</label>
-  <input
-    type="number"
-    [(ngModel)]="cashReceived"
-    (input)="calculateChange()"
-    placeholder="Ej. 500"
-  />
+      <div *ngIf="paymentMethod === 'efectivo'" class="cash-box">
+        <label style="font-size: 12px; color: #64748b; font-weight: 600;">EFECTIVO RECIBIDO</label>
+        <input
+          type="number"
+          [(ngModel)]="cashReceived"
+          (input)="calculateChange()"
+          placeholder="$ 0.00"
+        />
+        <div *ngIf="cashReceived >= total" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span style="color: #64748b; font-size: 14px;">Su cambio:</span>
+          <span style="font-weight: 700; color: #10b981;">${{ change }}</span>
+        </div>
+      </div>
 
-  <p *ngIf="cashReceived >= total">
-    Cambio: <strong>${{ change }}</strong>
-  </p>
-</div>
+      <div class="payment-options">
+        <button
+          class="payment-btn"
+          [ngClass]="{ active: paymentMethod === 'efectivo' }"
+          (click)="selectPayment('efectivo')"
+        >💵 Efectivo</button>
+        <button
+          class="payment-btn"
+          [ngClass]="{ active: paymentMethod === 'tarjeta' }"
+          (click)="selectPayment('tarjeta')"
+        >💳 Tarjeta</button>
+      </div>
 
-    <!-- MÉTODO DE PAGO -->
-    <div class="payment">
-     <button
-  class="payment-btn"
-  [ngClass]="{ active: paymentMethod === 'efectivo' }"
-  (click)="selectPayment('efectivo')"
->
-  💵 Efectivo
-</button>
-
-<button
-  class="payment-btn"
-  [ngClass]="{ active: paymentMethod === 'tarjeta' }"
-  (click)="selectPayment('tarjeta')"
->
-  💳 Tarjeta
-</button>
-
-    <button
-      class="btn-success"
-      [disabled]="!cart.length || !paymentMethod"
-      (click)="newSale()"
-    >
-      Finalizar venta
-    </button>
+      <button
+        class="btn-success"
+        [disabled]="!cart.length || !paymentMethod"
+        (click)="newSale()"
+      >
+        Finalizar Cobro
+      </button>
+    </div>
   </div>
-
 </div>
 
-<!-- 🧾 TICKET -->
 <div id="ticket-print">
-  <h3>ALEJANDRA </h3>
+  <h3 style="text-align: center;">ABARROTES ALEJANDRA</h3>
   <p>Fecha: {{ today | date:'short' }}</p>
   <hr>
-
   <div *ngFor="let item of cart">
     <p>
       {{ item.name }} x{{ item.qty }}
-      <span style="float:right">
-        ${{ item.price * item.qty }}
-      </span>
+      <span style="float:right">${{ item.price * item.qty }}</span>
     </p>
   </div>
-
   <hr>
-  
-  <p><strong>Total:</strong> ${{ total }}</p>
-  <p>Método: {{ paymentMethod }}</p>
-
-  <p style="text-align:center">¡Gracias por su compra!</p>
+  <p style="font-size: 18px;"><strong>Total:</strong> ${{ total }}</p>
+  <p>Método de pago: {{ paymentMethod }}</p>
+  <p style="text-align:center; margin-top: 20px;">¡Vuelva pronto!</p>
 </div>

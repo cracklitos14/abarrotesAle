@@ -1,13 +1,35 @@
+
+.copy {
+  font-weight: 400;
+  letter-spacing: 0.025em;
+}
+
+
+/* Un pequeño detalle: un punto verde de "sistema activo" junto a la hora */
+.fecha-hora::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 :host {
   display: block;
+  position: fixed; /* Esto lo deja estático */
+  bottom: 0;
+  left: 0;
   width: 100%;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
 }
 
 .footer {
-  background-color: #ffffff; /* Blanco para minimalismo */
-  color: #6b7280; /* Gris elegante */
-  padding: 16px 40px;
-  border-top: 1px solid #e5e7eb; /* Línea sutil en lugar de fondo sólido */
+  background-color: #ffffff; /* Blanco minimalista */
+  color: #6b7280;
+  padding: 12px 40px;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Sombra sutil hacia arriba */
 }
 
 .footer-content {
@@ -19,25 +41,7 @@
   margin: 0 auto;
 }
 
-.copy {
-  font-weight: 400;
-  letter-spacing: 0.025em;
-}
-
 .fecha-hora {
-  font-weight: 500;
-  color: #374151;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Un pequeño detalle: un punto verde de "sistema activo" junto a la hora */
-.fecha-hora::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background-color: #10b981;
-  border-radius: 50%;
-  display: inline-block;
+  font-weight: 600;
+  color: #2563eb; /* Azul para resaltar la hora */
 }

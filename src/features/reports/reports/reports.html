@@ -10,50 +10,52 @@
   </div>
 
   <div class="filtros-card">
+
     <div class="filtro-group">
       <label class="form-label">Fecha de Inicio</label>
-      <input type="date" [(ngModel)]="fechaInicio" [max]="fechaFin || hoy" class="form-control">
+      <input type="date" [(ngModel)]="fechaInicio" [max]="hoy" class="form-control">
     </div>
 
     <div class="filtro-group">
       <label class="form-label">Fecha de Fin</label>
-      <input type="date" [(ngModel)]="fechaFin" [min]="fechaInicio" [max]="hoy" class="form-control">
+      <input type="date" [(ngModel)]="fechaFin" [max]="hoy" class="form-control">
     </div>
 
     <button 
       class="btn-generar" 
       (click)="generarReporte()" 
       [disabled]="cargando">
+
       <span *ngIf="!cargando">📊 Generar Reporte</span>
       <span *ngIf="cargando">⏳ Generando...</span>
+
     </button>
+
   </div>
 
   <div class="export-actions">
-    <span style="font-size: 14px; font-weight: bold; color: #1e293b;">Exportar datos:</span>
 
-    <button class="btn-export csv" (click)="exportarReporteCSV()">
+    <span style="font-size: 14px;">Exportar datos:</span>
+
+    <button 
+      class="btn-export csv" 
+      (click)="exportarReporteCSV()"
+      [disabled]="cargando">
       📁 CSV
     </button>
 
-    <button class="btn-export pdf" (click)="exportarReportePDF()">
+    <button 
+      class="btn-export pdf" 
+      (click)="exportarReportePDF()">
       📄 PDF
     </button>
 
-    <button (click)="limpiarFiltros()" 
-            style="border:none; background:none; color:#64748b; text-decoration:underline; cursor:pointer; font-size:12px; margin-left: 10px;">
-      Cancelar / Limpiar
-    </button>
   </div>
 
+  <!-- ✅ TOAST -->
   <div class="alerta-toast" *ngIf="mostrarAlerta">
-    <div class="toast-content" style="display: flex; flex-direction: column; gap: 4px;">
-      <span style="font-weight: bold; color: #3b82f6;">✅ ¡Reporte Listo!</span>
-      <span style="font-size: 13px;">Haz clic en <b>PDF</b> o <b>CSV</b> para descargar los resultados.</span>
-      <button (click)="mostrarAlerta = false" 
-              style="align-self: flex-end; margin-top: 5px; background: white; border: none; border-radius: 4px; color: black; font-size: 11px; padding: 2px 8px; cursor: pointer;">
-        Entendido
-      </button>
+    <div class="toast-content">
+      ✅ Reporte generado. Ahora puedes exportarlo en PDF o CSV
     </div>
   </div>
 

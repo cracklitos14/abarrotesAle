@@ -45,49 +45,58 @@ export class ReportesComponent implements OnInit {
   // 🔥 GENERAR REPORTE PRO
   generarReporte() {
 
-  if(this.cargando) return;
+    if(this.cargando) return;
 
-  if(!this.fechaInicio || !this.fechaFin){
-    alert("Debes seleccionar ambas fechas");
-    return;
-  }
+    if(!this.fechaInicio || !this.fechaFin){
+      alert("Debes seleccionar ambas fechas");
+      return;
+    }
 
-  if(this.fechaFin < this.fechaInicio){
-    alert("La fecha final no puede ser menor que la inicial");
-    return;
-  }
+    if(this.fechaFin < this.fechaInicio){
+      alert("La fecha final no puede ser menor que la inicial");
+      return;
+    }
 
-  this.cargando = true;
-  this.mostrarAlerta = false;
+    this.cargando = true;
+    this.mostrarAlerta = false;
 
-  this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
-    .subscribe({
-      next: (data) => {
+    const inicioTiempo = Date.now();
 
-        this.reportes = data;
-        this.rangoInicio = this.fechaInicio;
-        this.rangoFin = this.fechaFin;
+    this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
+      .subscribe({
+        next: (data) => {
 
-        // 🔥 delay pequeño y seguro
-        setTimeout(() => {
-          this.cargando = false;
+          this.reportes = data;
+          this.rangoInicio = this.fechaInicio;
+          this.rangoFin = this.fechaFin;
 
-          this.mostrarAlerta = true;
+          const tiempoTranscurrido = Date.now() - inicioTiempo;
+          const tiempoMinimo = 1500;
+
+          const delay = tiempoTranscurrido < tiempoMinimo 
+            ? tiempoMinimo - tiempoTranscurrido 
+            : 0;
 
           setTimeout(() => {
-            this.mostrarAlerta = false;
-          }, 3000);
 
-        }, 500);
+            this.cargando = false;
 
-      },
-      error: (err) => {
-        console.error(err);
-        alert("Error al generar reporte");
-        this.cargando = false;
-      }
-    });
-}
+            this.mostrarAlerta = true;
+
+            setTimeout(() => {
+              this.mostrarAlerta = false;
+            }, 3000);
+
+          }, delay);
+
+        },
+        error: (err) => {
+          console.error(err);
+          alert("Error al generar reporte");
+          this.cargando = false;
+        }
+      });
+  }
 
   limpiarFiltros(){
     this.fechaInicio = this.hoy;
@@ -105,50 +114,63 @@ export class ReportesComponent implements OnInit {
       mensajeAlertas: ""
     };
   }
+exportarReporteCSV() {
 
-  exportarReporteCSV() {
-
-    const titulo = "Reporte de Ventas - Abarrotes Ale";
-    const rango = `Periodo: ${this.rangoInicio} a ${this.rangoFin}`;
-
-    const rows = [
-      [titulo],
-      [rango],
-      [],
-      ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
-      [],
-      ["Productos Agotados"],
-      ...(this.reportes.productosAgotados.length > 0
-        ? this.reportes.productosAgotados.map((p:any) => [p.nombre, p.stock])
-        : [["Ninguno"]]),
-      [],
-      ["Productos con Stock Bajo"],
-      ...(this.reportes.productosStockBajo.length > 0
-        ? this.reportes.productosStockBajo.map((p:any) => [p.nombre, p.stock, p.stock_minimo])
-        : [["Ninguno"]]),
-      [],
-      ["Productos Vendidos"],
-      ["Producto", "Unidades", "Ingresos (MXN)"],
-      ...(this.reportes.productosVendidos.length > 0
-        ? this.reportes.productosVendidos.map((p:any) => [p.nombre, p.unidades, p.ingresos])
-        : [["No hay productos vendidos"]])
-    ];
-
-    let csvContent = "data:text/csv;charset=utf-8,"
-      + rows.map(e => e.join(";")).join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Reporte_Abarrotes_Ale.csv");
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  if(!this.rangoInicio || !this.rangoFin){
+    alert("Primero genera el reporte");
+    return;
   }
 
+  const titulo = "Reporte de Ventas - Abarrotes Ale";
+  const rango = `Periodo: ${this.rangoInicio} a ${this.rangoFin}`;
+
+  const rows = [
+    [titulo],
+    [rango],
+    [],
+    ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
+    [],
+    ["Productos Agotados"],
+    ...(this.reportes.productosAgotados.length > 0
+      ? this.reportes.productosAgotados.map((p:any) => [p.nombre, p.stock])
+      : [["Ninguno"]]),
+    [],
+    ["Productos con Stock Bajo"],
+    ...(this.reportes.productosStockBajo.length > 0
+      ? this.reportes.productosStockBajo.map((p:any) => [p.nombre, p.stock, p.stock_minimo])
+      : [["Ninguno"]]),
+    [],
+    ["Productos Vendidos"],
+    ["Producto", "Unidades", "Ingresos (MXN)"],
+    ...(this.reportes.productosVendidos.length > 0
+      ? this.reportes.productosVendidos.map((p:any) => [p.nombre, p.unidades, p.ingresos])
+      : [["No hay productos vendidos"]])
+  ];
+
+  const csv = rows.map(e => e.join(";")).join("\n");
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Reporte_Abarrotes_Ale.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  window.URL.revokeObjectURL(url);
+}
   exportarReportePDF() {
+
+
+     if(!this.rangoInicio || !this.rangoFin){
+    alert("Primero genera el reporte");
+    return;
+  }
+
 
     const doc = new jsPDF();
     let currentY = 20;

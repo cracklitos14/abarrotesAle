@@ -40,14 +40,14 @@
     <button 
       class="btn-export csv" 
       (click)="exportarReporteCSV()"
-      [disabled]="reportes.productosVendidos.length === 0">
+      [disabled]="cargando">
       📁 CSV
     </button>
 
     <button 
       class="btn-export pdf" 
       (click)="exportarReportePDF()"
-      [disabled]="reportes.productosVendidos.length === 0">
+      [disabled]="cargando">
       📄 PDF
     </button>
 

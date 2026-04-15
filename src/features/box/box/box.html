@@ -1,124 +1,60 @@
-<div class="box-container">
-  <div class="encabezado-container">
-    <div>
-      <h2>Cierre de Caja</h2>
-      <p style="color: #64748b; margin: 0;">{{ today | date:'fullDate':'':'es' | titlecase }}</p>
-    </div>
-    <div *ngIf="mensaje" class="alert-mensaje">
-      {{ mensaje }}
+<div class="historial-section">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <h3 class="fw-bold" style="font-size: 20px; color: #1e293b; margin: 0;">Historial de Cierres</h3>
+    
+    <div class="filtros-container" style="display: flex; gap: 10px; align-items: flex-end;">
+      <div class="filter-group">
+        <label style="display: block; font-size: 12px; color: #64748b;">Desde:</label>
+        <input type="date" [(ngModel)]="inicio" [max]="today | date:'yyyy-MM-dd'" class="form-control form-control-sm">
+      </div>
+      
+      <div class="filter-group">
+        <label style="display: block; font-size: 12px; color: #64748b;">Hasta:</label>
+        <input type="date" [(ngModel)]="fin" [min]="inicio" [max]="today | date:'yyyy-MM-dd'" class="form-control form-control-sm">
+      </div>
+
+      <button class="btn btn-primary btn-sm" (click)="cargarHistorial()">
+        🔍 Filtrar
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm" (click)="limpiarFiltrosYTabla()">
+        🧹 Limpiar
+      </button>
+
+      <button class="btn btn-dark btn-sm" (click)="exportarPDF()" [disabled]="historial.length === 0">
+        📂 Exportar Todo
+      </button>
     </div>
   </div>
 
-  <ng-container *ngIf="!loading && !error">
-    <div class="grid-cierre">
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span>Ventas Totales</span>
-          <strong class="text-primary">{{ totalVentas | currency:'MXN' }}</strong>
-        </div>
-        <div class="stat-card">
-          <span>Efectivo en Sistema</span>
-          <strong style="color: #1e293b;">{{ totalEfectivo | currency:'MXN' }}</strong>
-        </div>
-        <div class="stat-card">
-          <span>Ventas con Tarjeta</span>
-          <strong style="color: #64748b;">{{ totalTarjeta | currency:'MXN' }}</strong>
-        </div>
-      </div>
+  <div class="table-card">
+    <table class="table table-hover align-middle mb-0" *ngIf="historial.length > 0">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Venta Total</th>
+          <th>Diferencia</th>
+          <th class="text-end">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of historial">
+          <td>{{ c.fecha }}</td>
+          <td>{{ c.total_ventas | currency:'MXN' }}</td>
+          <td [ngClass]="c.diferencia < 0 ? 'text-danger' : 'text-success'">
+            {{ c.diferencia | currency:'MXN' }}
+          </td>
+          <td class="text-end">
+            <button class="btn-pdf-row" (click)="exportarCierrePDF(c)">
+              PDF 📄
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-      <div class="action-card">
-        <div class="form-group">
-          <label class="form-label">Efectivo Físico Contado</label>
-          <div class="input-money">
-            <span class="prefix">$</span>
-            <input
-              type="number"
-              [(ngModel)]="efectivoContado"
-              (input)="calcularDiferencia()"
-              placeholder="0.00"
-            />
-          </div>
-        </div>
-
-        <div class="diferencia-box" [class.diff-ok]="diferencia === 0" [class.diff-bad]="diferencia !== 0">
-          <span class="label">Diferencia:</span>
-          <span class="value">{{ diferencia | currency:'MXN' }}</span>
-        </div>
-
-        <div class="form-group mt-3">
-          <label class="form-label">Observaciones</label>
-          <textarea
-            [(ngModel)]="observaciones"
-            placeholder="Escribe notas relevantes del turno..."
-            rows="3"
-          ></textarea>
-        </div>
-
-        <button class="btn-cerrar" (click)="cerrarCaja()">
-          🔐 Confirmar Cierre de Caja
-        </button>
-      </div>
-    </div>
-  </ng-container>
-
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted">Calculando saldos...</p>
-  </div>
-
-  <hr class="my-5" style="border-color: #e2e8f0;">
-
-  <div class="historial-section">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-      <h3 class="fw-bold" style="font-size: 20px; color: #1e293b; margin: 0;">Historial de Cierres</h3>
-      
-      <div class="filtros-container">
-        <div class="filter-group">
-          <label>Desde:</label>
-          <input type="date" [(ngModel)]="inicio" [max]="today | date:'yyyy-MM-dd'">
-        </div>
-        <div class="filter-group">
-          <label>Hasta:</label>
-          <input type="date" [(ngModel)]="fin" [min]="inicio" [max]="today | date:'yyyy-MM-dd'">
-        </div>
-        <button class="btn-filter" (click)="cargarHistorial()">🔍 Filtrar</button>
-        <button class="btn-pdf-all" (click)="exportarPDF()">📂 Exportar Todo</button>
-      </div>
-    </div>
-
-    <div class="table-card">
-      <table class="table table-hover align-middle mb-0" *ngIf="historial.length > 0">
-        <thead>
-          <tr>
-            <th>Fecha del Cierre</th>
-            <th>Venta Total</th>
-            <th>Efectivo Sist.</th>
-            <th>Físico Contado</th>
-            <th>Diferencia</th>
-            <th class="text-end">Reporte</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let c of historial">
-            <td class="fw-medium">{{ c.fecha }}</td>
-            <td>{{ c.total_ventas | currency:'MXN' }}</td>
-            <td>{{ c.total_efectivo | currency:'MXN' }}</td>
-            <td class="fw-bold">{{ c.efectivo_contado | currency:'MXN' }}</td>
-            <td [class.text-success]="c.diferencia === 0" [class.text-danger]="c.diferencia !== 0" class="fw-bold">
-              {{ c.diferencia | currency:'MXN' }}
-            </td>
-            <td class="text-end">
-              <button class="btn-pdf-row" (click)="exportarCierrePDF(c)" title="Descargar PDF">
-                PDF 📄
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div *ngIf="historial.length === 0" class="text-center py-4 text-muted">
-        No hay registros en el rango seleccionado.
-      </div>
+    <div *ngIf="historial.length === 0" class="text-center py-4 text-muted">
+      No hay registros cargados. Usa los filtros para buscar cierres anteriores.
     </div>
   </div>
 </div>

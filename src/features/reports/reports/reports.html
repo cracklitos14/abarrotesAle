@@ -41,7 +41,7 @@
     <button 
       class="btn-export csv" 
       (click)="exportarReporteCSV()"
-      >
+      [disabled]="cargando">
       📁 CSV
     </button>
 

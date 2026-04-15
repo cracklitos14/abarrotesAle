@@ -22,7 +22,8 @@ export class ReportesComponent implements OnInit {
   rangoInicio: string = '';
   rangoFin: string = '';
 
-  hoy: string = new Date().toLocaleDateString('sv-SE');
+  hoy: string = new Date().toISOString().split('T')[0];
+
 
   cargando: boolean = false;
 

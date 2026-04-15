@@ -37,6 +37,7 @@
 
     <span style="font-size: 14px;">Exportar datos:</span>
 
+    <!-- ✅ YA NO DEPENDE DE productosVendidos -->
     <button 
       class="btn-export csv" 
       (click)="exportarReporteCSV()"
@@ -53,7 +54,7 @@
 
   </div>
 
-  <!-- TOAST -->
+  <!-- ✅ TOAST -->
   <div class="alerta-toast" *ngIf="mostrarAlerta">
     <div class="toast-content">
       ✅ Reporte generado correctamente

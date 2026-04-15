@@ -5,10 +5,10 @@ import { Observable, map } from 'rxjs';
 
 export interface Reporte {
   ingresosTotales: number;
-  productosAgotados: any[];
-  productosStockBajo: any[];
-  ventasPorMetodo: any[];
-  productosVendidos: any[];
+  productosAgotados: { nombre: string; stock: number; stock_minimo: number }[];
+  productosStockBajo: { nombre: string; stock: number; stock_minimo: number }[];
+  ventasPorMetodo: { nombre: string; transacciones: number; monto: number }[];
+  productosVendidos: { nombre: string; unidades: number; ingresos: number }[];
   mensajeAlertas?: string;
 }
 
@@ -26,31 +26,35 @@ export class ReportsService {
     return this.http.get<any>(
       `${this.baseUrl}/reportes.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
     ).pipe(
+
       map((data:any) => {
 
-        // 🔥 NORMALIZAR PRODUCTOS VENDIDOS
-        const productosVendidos = (data.productosVendidos && data.productosVendidos.length > 0)
-          ? data.productosVendidos.map((p:any)=>({
-              nombre: p.nombre,
-              unidades: Number(p.unidades) || 0,
-              ingresos: Number(p.ingresos) || 0
-            }))
-          : [{
-              nombre: "Sin ventas",
-              unidades: 0,
-              ingresos: 0
-            }];
-
         return {
+
           ingresosTotales: Number(data.ingresosTotales) || 0,
+
           productosAgotados: data.productosAgotados || [],
+
           productosStockBajo: data.productosStockBajo || [],
+
           ventasPorMetodo: data.ventasPorMetodo || [],
-          productosVendidos,
+
+          productosVendidos: (data.productosVendidos || []).map((p:any)=>({
+
+            nombre: p.nombre,
+            unidades: Number(p.unidades),
+            ingresos: Number(p.ingresos)
+
+          })),
+
           mensajeAlertas: data.mensajeAlertas || ""
+
         };
 
       })
+
     );
+
   }
+
 }

@@ -45,58 +45,49 @@ export class ReportesComponent implements OnInit {
   // 🔥 GENERAR REPORTE PRO
   generarReporte() {
 
-    if(this.cargando) return;
+  if(this.cargando) return;
 
-    if(!this.fechaInicio || !this.fechaFin){
-      alert("Debes seleccionar ambas fechas");
-      return;
-    }
+  if(!this.fechaInicio || !this.fechaFin){
+    alert("Debes seleccionar ambas fechas");
+    return;
+  }
 
-    if(this.fechaFin < this.fechaInicio){
-      alert("La fecha final no puede ser menor que la inicial");
-      return;
-    }
+  if(this.fechaFin < this.fechaInicio){
+    alert("La fecha final no puede ser menor que la inicial");
+    return;
+  }
 
-    this.cargando = true;
-    this.mostrarAlerta = false;
+  this.cargando = true;
+  this.mostrarAlerta = false;
 
-    const inicioTiempo = Date.now();
+  this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
+    .subscribe({
+      next: (data) => {
 
-    this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
-      .subscribe({
-        next: (data) => {
+        this.reportes = data;
+        this.rangoInicio = this.fechaInicio;
+        this.rangoFin = this.fechaFin;
 
-          this.reportes = data;
-          this.rangoInicio = this.fechaInicio;
-          this.rangoFin = this.fechaFin;
+        // 🔥 delay pequeño y seguro
+        setTimeout(() => {
+          this.cargando = false;
 
-          const tiempoTranscurrido = Date.now() - inicioTiempo;
-          const tiempoMinimo = 1500;
-
-          const delay = tiempoTranscurrido < tiempoMinimo 
-            ? tiempoMinimo - tiempoTranscurrido 
-            : 0;
+          this.mostrarAlerta = true;
 
           setTimeout(() => {
+            this.mostrarAlerta = false;
+          }, 3000);
 
-            this.cargando = false;
+        }, 500);
 
-            this.mostrarAlerta = true;
-
-            setTimeout(() => {
-              this.mostrarAlerta = false;
-            }, 3000);
-
-          }, delay);
-
-        },
-        error: (err) => {
-          console.error(err);
-          alert("Error al generar reporte");
-          this.cargando = false;
-        }
-      });
-  }
+      },
+      error: (err) => {
+        console.error(err);
+        alert("Error al generar reporte");
+        this.cargando = false;
+      }
+    });
+}
 
   limpiarFiltros(){
     this.fechaInicio = this.hoy;

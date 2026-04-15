@@ -33,7 +33,7 @@ export class ReportesComponent implements OnInit {
 
   constructor(private reportsService: ReportsService) {}
 
-  ngOnInit() {
+  ngOnInit(){
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
   }
@@ -41,20 +41,19 @@ export class ReportesComponent implements OnInit {
   generarReporte() {
     if (this.cargando) return;
 
-    // 1. Validaciones de fechas
+    // ✅ VALIDACIÓN DE RANGO DE FECHAS
     if (!this.fechaInicio || !this.fechaFin) {
-      alert("⚠️ Por favor, selecciona ambas fechas.");
+      alert("⚠️ Debes seleccionar ambas fechas");
       return;
     }
 
     if (this.fechaInicio > this.fechaFin) {
-      alert("⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.");
+      alert("⚠️ La fecha de inicio no puede ser mayor a la de fin");
       return;
     }
 
     this.cargando = true;
     this.mostrarAlerta = false;
-    this.rangoInicio = ''; // Resetear rango previo para ocultar botones viejos
 
     this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
       .subscribe({
@@ -63,20 +62,22 @@ export class ReportesComponent implements OnInit {
           this.rangoInicio = this.fechaInicio;
           this.rangoFin = this.fechaFin;
 
-          // Finalizamos carga y mostramos aviso de descarga
-          this.cargando = false;
-          this.mostrarAlerta = true;
+          setTimeout(() => {
+            this.cargando = false;
+            // ✅ MOSTRAR ALERTA DE INSTRUCCIONES
+            this.mostrarAlerta = true;
+          }, 1000);
         },
         error: (err) => {
           console.error(err);
-          alert("❌ Error al obtener datos del servidor.");
+          alert("❌ Error al obtener datos del servidor");
           this.cargando = false;
         }
       });
   }
 
-  // Función para resetear todo después de una descarga exitosa
-  limpiarYFinalizar() {
+  // ✅ ESTA FUNCIÓN AHORA COINCIDE CON EL HTML
+  limpiarFiltros(){
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
     this.rangoInicio = '';
@@ -93,56 +94,77 @@ export class ReportesComponent implements OnInit {
   }
 
   exportarReportePDF() {
-    if (!this.rangoInicio) return;
+    if(!this.rangoInicio || !this.rangoFin){
+      alert("⚠️ Primero genera el reporte con el botón azul");
+      return;
+    }
 
     const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Reporte de Ventas - Abarrotes Alejandra", 14, 20);
-    doc.setFontSize(11);
-    doc.text(`Periodo: ${this.rangoInicio} al ${this.rangoFin}`, 14, 28);
+    let currentY = 20;
 
-    autoTable(doc, {
-      startY: 35,
-      head: [['Producto', 'Unidades', 'Ingresos']],
-      body: this.reportes.productosVendidos.map((p: any) => [
-        p.nombre, 
-        p.unidades, 
-        `$${p.ingresos}`
-      ]),
-      theme: 'striped'
-    });
+    doc.setFontSize(16);
+    doc.text("Reporte de Ventas - Abarrotes Ale", 40, currentY);
+    currentY += 10;
+    doc.setFontSize(12);
+    doc.text(`Periodo: ${this.rangoInicio} a ${this.rangoFin}`, 14, currentY);
+    currentY += 15;
 
-    doc.save(`Reporte_Ventas_${this.rangoInicio}.pdf`);
-    
-    alert("✅ PDF descargado. El formulario se reiniciará.");
-    this.limpiarYFinalizar();
+    doc.setFontSize(14);
+    doc.text(`Ingresos Totales: $${this.reportes.ingresosTotales} MXN`, 14, currentY);
+    currentY += 15;
+
+    // Productos Agotados
+    doc.text("Productos Agotados", 14, currentY);
+    if (this.reportes.productosAgotados && this.reportes.productosAgotados.length > 0) {
+      autoTable(doc,{
+        startY: currentY + 5,
+        head:[["Producto","Stock"]],
+        body:this.reportes.productosAgotados.map((p:any)=>[p.nombre,p.stock])
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.text("Ninguno", 14, currentY + 8);
+      currentY += 15;
+    }
+
+    // Productos Vendidos
+    doc.text("Productos Vendidos", 14, currentY);
+    if(this.reportes.productosVendidos && this.reportes.productosVendidos.length > 0){
+      autoTable(doc,{
+        startY: currentY + 5,
+        head:[["Producto","Unidades","Ingresos"]],
+        body:this.reportes.productosVendidos.map((p:any)=>[p.nombre, p.unidades, `$${p.ingresos}`])
+      });
+    }
+
+    doc.save(`Reporte_Ale_${this.rangoInicio}.pdf`);
+    this.limpiarFiltros(); // Limpia después de descargar
   }
 
   exportarReporteCSV() {
-    if (!this.rangoInicio) return;
+    if(!this.rangoInicio || !this.rangoFin){
+      alert("⚠️ Primero genera el reporte con el botón azul");
+      return;
+    }
 
-    const filas = [
-      ["Reporte de Ventas - Abarrotes Alejandra"],
+    const rows = [
+      ["Reporte de Ventas - Abarrotes Ale"],
       [`Periodo: ${this.rangoInicio} a ${this.rangoFin}`],
-      [""],
-      ["Producto", "Unidades", "Subtotal (MXN)"]
+      [],
+      ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
+      [],
+      ["Producto", "Unidades", "Ingresos (MXN)"],
+      ...this.reportes.productosVendidos.map((p:any) => [p.nombre, p.unidades, p.ingresos])
     ];
 
-    this.reportes.productosVendidos.forEach((p: any) => {
-      filas.push([p.nombre, p.unidades, p.ingresos]);
-    });
-
-    const csvContent = filas.map(e => e.join(",")).join("\n");
-    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csv = rows.map(e => e.join(";")).join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Reporte_Ale_${this.rangoInicio}.csv`);
-    document.body.appendChild(link);
+    link.href = url;
+    link.download = `Reporte_Ale_${this.rangoInicio}.csv`;
     link.click();
-    document.body.removeChild(link);
-
-    alert("✅ CSV descargado. El formulario se reiniciará.");
-    this.limpiarYFinalizar();
+    
+    this.limpiarFiltros(); // Limpia después de descargar
   }
 }

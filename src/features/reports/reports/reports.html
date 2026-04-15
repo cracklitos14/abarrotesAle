@@ -25,41 +25,33 @@
       (click)="generarReporte()" 
       [disabled]="cargando">
       <span *ngIf="!cargando">📊 Generar Reporte</span>
-      <span *ngIf="cargando">⏳ Procesando datos...</span>
+      <span *ngIf="cargando">⏳ Generando...</span>
     </button>
   </div>
 
-  <div class="export-actions" *ngIf="rangoInicio && !cargando" 
-       style="border: 2px solid #2563eb; background: #eff6ff; padding: 20px; border-radius: 12px; margin-top: 20px;">
-    
-    <div style="margin-bottom: 15px; color: #1e40af; font-weight: bold;">
-      🚀 Reporte generado para el periodo: {{rangoInicio}} al {{rangoFin}}
-    </div>
+  <div class="export-actions">
+    <span style="font-size: 14px; font-weight: bold; color: #1e293b;">Exportar datos:</span>
 
-    <div style="display: flex; gap: 15px;">
-      <button class="btn-export csv" (click)="exportarReporteCSV()">
-        📁 Descargar CSV
-      </button>
+    <button class="btn-export csv" (click)="exportarReporteCSV()">
+      📁 CSV
+    </button>
 
-      <button class="btn-export pdf" (click)="exportarReportePDF()">
-        📄 Descargar PDF
-      </button>
-      
-      <button (click)="limpiarYFinalizar()" 
-              style="background:none; border:1px solid #94a3b8; color:#64748b; padding:8px 12px; border-radius:8px; cursor:pointer;">
-        Cancelar
-      </button>
-    </div>
+    <button class="btn-export pdf" (click)="exportarReportePDF()">
+      📄 PDF
+    </button>
+
+    <button (click)="limpiarFiltros()" 
+            style="border:none; background:none; color:#64748b; text-decoration:underline; cursor:pointer; font-size:12px; margin-left: 10px;">
+      Cancelar / Limpiar
+    </button>
   </div>
 
   <div class="alerta-toast" *ngIf="mostrarAlerta">
-    <div class="toast-content" style="display: flex; flex-direction: column; gap: 5px;">
-      <div style="font-weight: bold; font-size: 16px;">📂 Reporte Listo</div>
-      <div style="font-size: 13px; opacity: 0.9;">
-        Presiona los botones de descarga abajo para visualizar el archivo.
-      </div>
+    <div class="toast-content" style="display: flex; flex-direction: column; gap: 4px;">
+      <span style="font-weight: bold; color: #3b82f6;">✅ ¡Reporte Listo!</span>
+      <span style="font-size: 13px;">Haz clic en <b>PDF</b> o <b>CSV</b> para descargar los resultados.</span>
       <button (click)="mostrarAlerta = false" 
-              style="align-self: flex-end; background: white; color: black; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-top: 5px; cursor: pointer;">
+              style="align-self: flex-end; margin-top: 5px; background: white; border: none; border-radius: 4px; color: black; font-size: 11px; padding: 2px 8px; cursor: pointer;">
         Entendido
       </button>
     </div>

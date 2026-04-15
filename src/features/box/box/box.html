@@ -82,7 +82,8 @@
           <label>Hasta:</label>
           <input type="date" [(ngModel)]="fin" [min]="inicio" [max]="today | date:'yyyy-MM-dd'">
         </div>
-         <button class="btn-pdf-all" (click)="exportarPDF()">📂 Exportar Todo</button>
+        <button class="btn-filter" (click)="cargarHistorial()">🔍 Filtrar</button>
+        <button class="btn-pdf-all" (click)="exportarPDF()">📂 Exportar Todo</button>
       </div>
     </div>
 

@@ -10,54 +10,58 @@
   </div>
 
   <div class="filtros-card">
-
     <div class="filtro-group">
       <label class="form-label">Fecha de Inicio</label>
-      <input type="date" [(ngModel)]="fechaInicio" [max]="hoy" class="form-control">
+      <input type="date" [(ngModel)]="fechaInicio" [max]="fechaFin || hoy" class="form-control">
     </div>
 
     <div class="filtro-group">
       <label class="form-label">Fecha de Fin</label>
-      <input type="date" [(ngModel)]="fechaFin" [max]="hoy" class="form-control">
+      <input type="date" [(ngModel)]="fechaFin" [min]="fechaInicio" [max]="hoy" class="form-control">
     </div>
 
     <button 
       class="btn-generar" 
       (click)="generarReporte()" 
       [disabled]="cargando">
-
       <span *ngIf="!cargando">📊 Generar Reporte</span>
-      <span *ngIf="cargando">⏳ Generando...</span>
-
+      <span *ngIf="cargando">⏳ Procesando datos...</span>
     </button>
-
   </div>
 
-  <div class="export-actions">
+  <div class="export-actions" *ngIf="rangoInicio && !cargando" 
+       style="border: 2px solid #2563eb; background: #eff6ff; padding: 20px; border-radius: 12px; margin-top: 20px;">
+    
+    <div style="margin-bottom: 15px; color: #1e40af; font-weight: bold;">
+      🚀 Reporte generado para el periodo: {{rangoInicio}} al {{rangoFin}}
+    </div>
 
-    <span style="font-size: 14px;">Exportar datos:</span>
+    <div style="display: flex; gap: 15px;">
+      <button class="btn-export csv" (click)="exportarReporteCSV()">
+        📁 Descargar CSV
+      </button>
 
-    <!-- ✅ YA NO DEPENDE DE productosVendidos -->
-    <button 
-      class="btn-export csv" 
-      (click)="exportarReporteCSV()"
-      [disabled]="cargando">
-      📁 CSV
-    </button>
-
-    <button 
-      class="btn-export pdf" 
-      (click)="exportarReportePDF()"
-     >
-      📄 PDF
-    </button>
-
+      <button class="btn-export pdf" (click)="exportarReportePDF()">
+        📄 Descargar PDF
+      </button>
+      
+      <button (click)="limpiarYFinalizar()" 
+              style="background:none; border:1px solid #94a3b8; color:#64748b; padding:8px 12px; border-radius:8px; cursor:pointer;">
+        Cancelar
+      </button>
+    </div>
   </div>
 
-  <!-- ✅ TOAST -->
   <div class="alerta-toast" *ngIf="mostrarAlerta">
-    <div class="toast-content">
-      ✅ Reporte generado correctamente
+    <div class="toast-content" style="display: flex; flex-direction: column; gap: 5px;">
+      <div style="font-weight: bold; font-size: 16px;">📂 Reporte Listo</div>
+      <div style="font-size: 13px; opacity: 0.9;">
+        Presiona los botones de descarga abajo para visualizar el archivo.
+      </div>
+      <button (click)="mostrarAlerta = false" 
+              style="align-self: flex-end; background: white; color: black; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-top: 5px; cursor: pointer;">
+        Entendido
+      </button>
     </div>
   </div>
 

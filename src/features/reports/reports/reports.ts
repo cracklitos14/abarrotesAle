@@ -16,15 +16,10 @@ export class ReportesComponent implements OnInit {
 
   fechaInicio: string = '';
   fechaFin: string = '';
-
   mostrarAlerta: boolean = false;
-
   rangoInicio: string = '';
   rangoFin: string = '';
-
   hoy: string = new Date().toISOString().split('T')[0];
-
-
   cargando: boolean = false;
 
   reportes: any = {
@@ -38,92 +33,55 @@ export class ReportesComponent implements OnInit {
 
   constructor(private reportsService: ReportsService) {}
 
-  ngOnInit(){
+  ngOnInit() {
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
   }
 
-  // 🔥 GENERAR REPORTE PRO
- // 🔥 GENERAR REPORTE (Ajustado)
-generarReporte() {
-  if (this.cargando) return;
+  generarReporte() {
+    if (this.cargando) return;
 
-  if (!this.fechaInicio || !this.fechaFin) {
-    alert("Debes seleccionar ambas fechas");
-    return;
-  }
+    // 1. Validaciones de fechas
+    if (!this.fechaInicio || !this.fechaFin) {
+      alert("⚠️ Por favor, selecciona ambas fechas.");
+      return;
+    }
 
-  this.cargando = true;
-  this.mostrarAlerta = false;
+    if (this.fechaInicio > this.fechaFin) {
+      alert("⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.");
+      return;
+    }
 
-  this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
-    .subscribe({
-      next: (data) => {
-        // Asignamos los datos inmediatamente
-        this.reportes = data;
-        this.rangoInicio = this.fechaInicio;
-        this.rangoFin = this.fechaFin;
+    this.cargando = true;
+    this.mostrarAlerta = false;
+    this.rangoInicio = ''; // Resetear rango previo para ocultar botones viejos
 
-        // El delay es solo visual para el spinner
-        setTimeout(() => {
+    this.reportsService.getReportesPorFechas(this.fechaInicio, this.fechaFin)
+      .subscribe({
+        next: (data) => {
+          this.reportes = data;
+          this.rangoInicio = this.fechaInicio;
+          this.rangoFin = this.fechaFin;
+
+          // Finalizamos carga y mostramos aviso de descarga
           this.cargando = false;
           this.mostrarAlerta = true;
-          setTimeout(() => (this.mostrarAlerta = false), 3000);
-        }, 1500);
-      },
-      error: (err) => {
-        console.error(err);
-        alert("Error al obtener datos del servidor");
-        this.cargando = false;
-      }
-    });
-}
-
-// 📄 EXPORTAR PDF (Optimizado)
-exportarReportePDF() {
-  // Verificamos si hay datos en el objeto reportes en lugar de solo las fechas
-  if (!this.reportes || this.reportes.ingresosTotales === undefined) {
-    alert("Primero genera el reporte con el botón de la lupa");
-    return;
+        },
+        error: (err) => {
+          console.error(err);
+          alert("❌ Error al obtener datos del servidor.");
+          this.cargando = false;
+        }
+      });
   }
 
-  const doc = new jsPDF();
-  let currentY = 20;
-
-  doc.setFontSize(18);
-  doc.setTextColor(40);
-  doc.text("Reporte de Ventas - Abarrotes Ale", 14, currentY);
-
-  currentY += 10;
-  doc.setFontSize(11);
-  doc.text(`Periodo: ${this.rangoInicio} al ${this.rangoFin}`, 14, currentY);
-  
-  currentY += 15;
-  doc.setFontSize(14);
-  doc.text(`Ingresos Totales: $${this.reportes.ingresosTotales} MXN`, 14, currentY);
-
-  // Tabla de Productos Vendidos
-  if (this.reportes.productosVendidos && this.reportes.productosVendidos.length > 0) {
-    autoTable(doc, {
-      startY: currentY + 10,
-      head: [['Producto', 'Unidades', 'Ingresos']],
-      body: this.reportes.productosVendidos.map((p: any) => [p.nombre, p.unidades, `$${p.ingresos}`]),
-      theme: 'striped'
-    });
-  } else {
-    currentY += 10;
-    doc.text("No hubo ventas en este periodo.", 14, currentY);
-  }
-
-  doc.save(`Reporte_Ventas_${this.rangoInicio}_${this.rangoFin}.pdf`);
-}
-  limpiarFiltros(){
+  // Función para resetear todo después de una descarga exitosa
+  limpiarYFinalizar() {
     this.fechaInicio = this.hoy;
     this.fechaFin = this.hoy;
-
     this.rangoInicio = '';
     this.rangoFin = '';
-
+    this.mostrarAlerta = false;
     this.reportes = {
       ingresosTotales: 0,
       productosAgotados: [],
@@ -134,191 +92,57 @@ exportarReportePDF() {
     };
   }
 
-  exportarReporteCSV() {
-  if (!this.rangoInicio) {
-    alert("Genera el reporte primero");
-    return;
-  }
-
-  const filas = [
-    ["Reporte de Ventas - Abarrotes Alejandra"],
-    [`Periodo: ${this.rangoInicio} a ${this.rangoFin}`],
-    [""],
-    ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
-    [""],
-    ["PRODUCTOS VENDIDOS"],
-    ["Producto", "Unidades", "Subtotal"]
-  ];
-
-  this.reportes.productosVendidos.forEach((p: any) => {
-    filas.push([p.nombre, p.unidades, p.ingresos]);
-  });
-
-  // Convertir a texto CSV
-  const csvContent = filas.map(e => e.join(",")).join("\n");
-  
-  // Agregar BOM para que Excel reconozca eñes y acentos
-  const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = window.URL.createObjectURL(blob);
-  
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", `Reporte_Ale_${this.rangoInicio}.csv`);
-  document.body.appendChild(link);
-  
-  link.click();
-  document.body.removeChild(link);
-}
-/*/exportarReporteCSV() {
-
-  if(!this.rangoInicio || !this.rangoFin){
-    alert("Primero genera el reporte");
-    return;
-  }
-
-  const titulo = "Reporte de Ventas - Abarrotes Ale";
-  const rango = `Periodo: ${this.rangoInicio} a ${this.rangoFin}`;
-
-  const rows = [
-    [titulo],
-    [rango],
-    [],
-    ["Ingresos Totales", `${this.reportes.ingresosTotales} MXN`],
-    [],
-    ["Productos Agotados"],
-    ...(this.reportes.productosAgotados.length > 0
-      ? this.reportes.productosAgotados.map((p:any) => [p.nombre, p.stock])
-      : [["Ninguno"]]),
-    [],
-    ["Productos con Stock Bajo"],
-    ...(this.reportes.productosStockBajo.length > 0
-      ? this.reportes.productosStockBajo.map((p:any) => [p.nombre, p.stock, p.stock_minimo])
-      : [["Ninguno"]]),
-    [],
-    ["Productos Vendidos"],
-    ["Producto", "Unidades", "Ingresos (MXN)"],
-    ...(this.reportes.productosVendidos.length > 0
-      ? this.reportes.productosVendidos.map((p:any) => [p.nombre, p.unidades, p.ingresos])
-      : [["No hay productos vendidos"]])
-  ];
-
-  const csv = rows.map(e => e.join(";")).join("\n");
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-  const url = window.URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "Reporte_Abarrotes_Ale.csv";
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  window.URL.revokeObjectURL(url);
-}
   exportarReportePDF() {
-
-
-     if(!this.rangoInicio || !this.rangoFin){
-    alert("Primero genera el reporte");
-    return;
-  }
-
+    if (!this.rangoInicio) return;
 
     const doc = new jsPDF();
-    let currentY = 20;
+    doc.setFontSize(18);
+    doc.text("Reporte de Ventas - Abarrotes Alejandra", 14, 20);
+    doc.setFontSize(11);
+    doc.text(`Periodo: ${this.rangoInicio} al ${this.rangoFin}`, 14, 28);
 
-    doc.setFontSize(16);
-    doc.text("Reporte de Ventas - Abarrotes Ale", 40, currentY);
+    autoTable(doc, {
+      startY: 35,
+      head: [['Producto', 'Unidades', 'Ingresos']],
+      body: this.reportes.productosVendidos.map((p: any) => [
+        p.nombre, 
+        p.unidades, 
+        `$${p.ingresos}`
+      ]),
+      theme: 'striped'
+    });
 
-    currentY += 10;
-
-    const inicio = this.rangoInicio || "N/A";
-    const fin = this.rangoFin || "N/A";
-
-    doc.setFontSize(12);
-    doc.text(`Periodo: ${inicio} a ${fin}`, 14, currentY);
-
-    currentY += 15;
-
-    doc.setFontSize(14);
-    doc.text("Ingresos Totales", 14, currentY);
-
-    currentY += 8;
-
-    doc.setFontSize(12);
-    doc.text(`${this.reportes.ingresosTotales} MXN`, 14, currentY);
-
-    currentY += 15;
-
-    // Agotados
-    doc.setFontSize(14);
-    doc.text("Productos Agotados", 14, currentY);
-
-    if (this.reportes.productosAgotados.length > 0) {
-
-      autoTable(doc,{
-        startY: currentY + 5,
-        head:[["Producto","Stock"]],
-        body:this.reportes.productosAgotados.map((p:any)=>[p.nombre,p.stock])
-      });
-
-      const finalY = (doc as any).lastAutoTable?.finalY || currentY;
-      currentY = finalY + 15;
-
-    } else {
-      doc.text("Ninguno",14,currentY + 8);
-      currentY += 15;
-   
-      }
-
-    // Stock bajo
-    doc.setFontSize(14);
-    doc.text("Productos con Stock Bajo",14,currentY);
-
-    if(this.reportes.productosStockBajo.length > 0){
-
-      autoTable(doc,{
-        startY: currentY + 5,
-        head:[["Producto","Stock","Mínimo"]],
-        body:this.reportes.productosStockBajo.map((p:any)=>[
-          p.nombre,
-          p.stock,
-          p.stock_minimo
-        ])
-      });
-
-      const finalY = (doc as any).lastAutoTable?.finalY || currentY;
-      currentY = finalY + 15;
-
-    } else {
-      doc.text("Ninguno",14,currentY + 8);
-      currentY += 15;
-    }
-
-    // Vendidos
-    doc.setFontSize(14);
-    doc.text("Productos Vendidos",14,currentY);
-
-    if(this.reportes.productosVendidos.length > 0){
-
-      autoTable(doc,{
-        startY: currentY + 5,
-        head:[["Producto","Unidades","Ingresos"]],
-        body:this.reportes.productosVendidos.map((p:any)=>[
-          p.nombre,
-          p.unidades,
-          p.ingresos
-        ])
-      });
-
-    } else {
-      doc.text("No hay productos vendidos",14,currentY + 8);
-    }
-
-    doc.save("Reporte_Abarrotes_Ale.pdf");
+    doc.save(`Reporte_Ventas_${this.rangoInicio}.pdf`);
+    
+    alert("✅ PDF descargado. El formulario se reiniciará.");
+    this.limpiarYFinalizar();
   }
-*/
+
+  exportarReporteCSV() {
+    if (!this.rangoInicio) return;
+
+    const filas = [
+      ["Reporte de Ventas - Abarrotes Alejandra"],
+      [`Periodo: ${this.rangoInicio} a ${this.rangoFin}`],
+      [""],
+      ["Producto", "Unidades", "Subtotal (MXN)"]
+    ];
+
+    this.reportes.productosVendidos.forEach((p: any) => {
+      filas.push([p.nombre, p.unidades, p.ingresos]);
+    });
+
+    const csvContent = filas.map(e => e.join(",")).join("\n");
+    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Reporte_Ale_${this.rangoInicio}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    alert("✅ CSV descargado. El formulario se reiniciará.");
+    this.limpiarYFinalizar();
+  }
 }
